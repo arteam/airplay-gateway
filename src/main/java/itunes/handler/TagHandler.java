@@ -1,13 +1,14 @@
 package itunes.handler;
 
 import itunes.parser.Tag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Handler for properties in library.xml
  */
 interface TagHandler {
 
-    public void key(String propertyName);
+    public void key(@NotNull String propertyName);
 
-    public void value(Tag propertyValue);
+    public void value(@NotNull Tag propertyValue);
 }

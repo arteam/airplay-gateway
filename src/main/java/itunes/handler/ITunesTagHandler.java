@@ -5,25 +5,28 @@ import itunes.handler.constants.TagType;
 import itunes.parser.Tag;
 
 import com.google.inject.Inject;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Base handler for library.xml file
  */
 public class ITunesTagHandler {
 
+    @NotNull
     private final TrackTagHandler trackTagHandler;
 
+    @NotNull
     private TagHandler tagHandler;
 
     @Inject
-    public ITunesTagHandler(TrackTagHandler trackTagHandler,
-                            LibraryTagHandler libraryTagHandler) {
+    public ITunesTagHandler(@NotNull TrackTagHandler trackTagHandler,
+                            @NotNull LibraryTagHandler libraryTagHandler) {
         this.trackTagHandler = trackTagHandler;
         tagHandler = libraryTagHandler;
     }
 
 
-    public void handleTag(Tag tag) {
+    public void handleTag(@NotNull Tag tag) {
         if (tag.getName().equals(TagType.KEY) && tag.getInnerText().equals(LibraryProperty.TRACKS.getName())) {
             tagHandler = trackTagHandler;
         }

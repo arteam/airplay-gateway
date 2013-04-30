@@ -5,6 +5,7 @@ import com.google.inject.*;
 import itunes.data.ITunesLibrary;
 import itunes.handler.constants.LibraryProperty;
 import itunes.parser.Tag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Handler for Itunes library tags
@@ -14,15 +15,16 @@ public class LibraryTagHandler implements TagHandler {
     @Inject
     private ITunesLibrary library;
 
+    @NotNull
     private LibraryProperty currentProperty = LibraryProperty.NO_PROPERTY;
 
     @Override
-    public void key(String propertyName) {
+    public void key(@NotNull String propertyName) {
         currentProperty = LibraryProperty.get(propertyName);
     }
 
     @Override
-    public void value(Tag propertyValue) {
+    public void value(@NotNull Tag propertyValue) {
         try {
             if (currentProperty.equals(LibraryProperty.NO_PROPERTY)) {
                 //don't do anything...

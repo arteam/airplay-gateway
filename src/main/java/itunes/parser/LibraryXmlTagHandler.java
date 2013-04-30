@@ -20,6 +20,7 @@ package itunes.parser;
 
 import itunes.handler.ITunesTagHandler;
 import itunes.handler.constants.TagType;
+import org.jetbrains.annotations.NotNull;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -55,6 +56,7 @@ public class LibraryXmlTagHandler extends DefaultHandler {
     @Inject
     private ITunesTagHandler tagHandler;
 
+    @NotNull
     private Tag currentTag;
 
     @Override
