@@ -1,17 +1,20 @@
 package itunes.handler;
 
+import javax.inject.*;
+
 import itunes.data.ITunesLibrary;
 import itunes.handler.constants.LibraryProperty;
 import itunes.parser.Tag;
 
-public class LibraryPropertyTagHandler implements PropertyTagHandler {
+/**
+ * Handler for Itunes library tags
+ */
+public class LibraryTagHandler implements TagHandler {
 
-    private final ITunesLibrary library;
+    @Inject
+    private ITunesLibrary library;
+
     private LibraryProperty currentProperty = LibraryProperty.NO_PROPERTY;
-
-    public LibraryPropertyTagHandler(ITunesLibrary library) {
-        this.library = library;
-    }
 
     @Override
     public void key(String propertyName) {
@@ -48,7 +51,7 @@ public class LibraryPropertyTagHandler implements PropertyTagHandler {
                 System.out.println("Supported Itunes Library Property Was Not Handled Correctly: " + currentProperty);
             }
         } catch (Exception e) {
-            System.err.println("Error occured during library property parsing: " + e.getMessage());
+            System.err.println("Error occurred during library property parsing: " + e.getMessage());
         }
 
         //now that we've handled the data for this property, we need to reset ourselves back to "no property"

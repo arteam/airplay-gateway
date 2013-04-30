@@ -13,6 +13,7 @@ public enum TagType {
     TRUE("true"),
     FALSE("false"),
     DATA("data"),
+    NO("no"),
     PLIST("plist");
 
     private static final Map<String, TagType> tags = new HashMap<String, TagType>();
@@ -34,7 +35,9 @@ public enum TagType {
     }
 
     public static TagType get(String name) {
-        return tags.get(name);
+        TagType tagType = tags.get(name);
+        if (tagType == null) tagType = NO;
+        return tagType;
     }
 
 }

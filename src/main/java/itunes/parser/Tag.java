@@ -28,28 +28,34 @@
 package itunes.parser;
 
 import itunes.handler.constants.TagType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents XML tag
  */
 public class Tag {
 
+    @NotNull
     private TagType name;
+
+    @NotNull
     private String innerText;
 
-    public void clear() {
-        name = null;
-        innerText = null;
+    public Tag(@NotNull TagType name) {
+        this.name = name;
     }
 
+    @NotNull
     public TagType getName() {
         return name;
     }
 
-    public void setName(TagType name) {
+    public void setName(@NotNull TagType name) {
         this.name = name;
     }
 
+    @NotNull
     public String getInnerText() {
         return innerText;
     }

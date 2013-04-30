@@ -15,20 +15,16 @@ import java.util.Map;
 */
 public class ITunesLibrary {
 
-    protected int majorVersion = -1;
-    protected int minorVersion = -1;
-    protected String applicationVersion = null;
-    protected int features = -1;
-    protected boolean showContentRatings = false;
-    protected String musicFolder = null;
-    protected String libraryPersistentID = null;
-
-    /**
-     * this stores the path the library was parsed from
-     */
-    protected String libraryXmlPath = null;
-
-    protected Map<Integer, ITunesTrack> tracks = new HashMap<Integer, ITunesTrack>();
+    private int majorVersion = -1;
+    private int minorVersion = -1;
+    private String applicationVersion;
+    private int features = -1;
+    private boolean showContentRatings = false;
+    private String musicFolder;
+    private String libraryPersistentID;
+    // this stores the path the library was parsed from
+    private String libraryXmlPath;
+    private Map<Integer, ITunesTrack> tracks = new HashMap<Integer, ITunesTrack>();
 
     public void addTrack(ITunesTrack track) {
         tracks.put(track.getTrackID(), track);
