@@ -23,8 +23,6 @@ public class ITunesLibrary {
     private boolean showContentRatings = false;
     private String musicFolder;
     private String libraryPersistentID;
-    // this stores the path the library was parsed from
-    private String libraryXmlPath;
     private Map<Integer, ITunesTrack> tracks = new HashMap<Integer, ITunesTrack>();
 
     public void addTrack(ITunesTrack track) {
@@ -38,7 +36,7 @@ public class ITunesLibrary {
         return tracks.get(trackId);
     }
 
-    public Map getTracks() {
+    public Map<Integer, ITunesTrack> getTracks() {
         return tracks;
     }
 
@@ -98,13 +96,6 @@ public class ITunesLibrary {
         this.libraryPersistentID = libraryPersistentID;
     }
 
-    public String getLibraryXmlPath() {
-        return libraryXmlPath;
-    }
-
-    public void setLibraryXmlPath(String libraryXmlPath) {
-        this.libraryXmlPath = libraryXmlPath;
-    }
 
     public String getDate() {
         return date;
@@ -125,7 +116,6 @@ public class ITunesLibrary {
         sb.append("showContentRatings=").append(showContentRatings).append("\n");
         sb.append("musicFolder=").append(musicFolder).append("\n");
         sb.append("libraryPersistentID=").append(libraryPersistentID).append("\n");
-        sb.append("libraryXmlPath=").append(libraryXmlPath).append("\n");
         sb.append("tracks=").append(tracks).append("\n");
         sb.append('}');
         return sb.toString();

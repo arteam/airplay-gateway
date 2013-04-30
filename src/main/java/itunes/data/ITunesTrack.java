@@ -404,7 +404,7 @@ public class ITunesTrack {
         this.unplayed = unplayed;
     }
 
-    public boolean isHasVideo() {
+    public boolean hasVideo() {
         return hasVideo;
     }
 
