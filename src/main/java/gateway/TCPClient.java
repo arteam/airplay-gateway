@@ -2,7 +2,6 @@ package gateway;
 
 import command.DeviceCommand;
 import model.Device;
-import model.DeviceResponse;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

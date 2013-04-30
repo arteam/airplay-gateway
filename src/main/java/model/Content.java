@@ -30,7 +30,7 @@ public class Content {
     private final boolean isHd;
 
     public Content(@NotNull ITunesTrack track) {
-        id = track.getTrackID();
+        id = track.getTrackId();
         name = track.getName();
         artist = track.getArtist();
         type = ContentType.get(track.getKind());

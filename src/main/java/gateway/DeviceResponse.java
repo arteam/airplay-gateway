@@ -1,4 +1,4 @@
-package model;
+package gateway;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -7,7 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Date: 27.04.13
+ * Time: 11:01
  * HTTP response for AirPlay device
+ *
+ * @author Artem Prigoda
  */
 public class DeviceResponse {
 

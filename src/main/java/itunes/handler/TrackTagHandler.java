@@ -1,7 +1,6 @@
 package itunes.handler;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import itunes.data.ITunesLibrary;
 import itunes.data.ITunesTrack;
 import itunes.handler.constants.TrackProperty;
@@ -39,7 +38,7 @@ class TrackTagHandler implements TagHandler {
 
                 // the library's internal map of tracks is keyed off of the
                 // track id, so let's set that first
-                currentTrack.setTrackID(DataParser.parseInteger(TrackProperty.TRACK_ID, propertyValue));
+                currentTrack.setTrackId(DataParser.parseInteger(TrackProperty.TRACK_ID, propertyValue));
 
                 // add a reference to the track to the library's list..
                 library.addTrack(currentTrack);

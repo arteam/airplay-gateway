@@ -3,16 +3,9 @@ package itunes.data;
 import java.util.HashMap;
 import java.util.Map;
 
-/*
-    Example Itunes Library Properties:
-	<key>Major Version</key><integer>1</integer>
-	<key>Minor Version</key><integer>1</integer>
-	<key>Application Version</key><string>7.0.1</string>
-	<key>Features</key><integer>1</integer>
-	<key>Show Content Ratings</key><true/>
-	<key>Music Folder</key><string>file://localhost/E:/itunes/</string>
-	<key>Library Persistent ID</key><string>4EC2FAC25152379E</string>
-*/
+/**
+ * Represents info about Itunes library (with tracks)
+ */
 public class ITunesLibrary {
 
     private int majorVersion = -1;
@@ -26,7 +19,7 @@ public class ITunesLibrary {
     private Map<Integer, ITunesTrack> tracks = new HashMap<Integer, ITunesTrack>();
 
     public void addTrack(ITunesTrack track) {
-        tracks.put(track.getTrackID(), track);
+        tracks.put(track.getTrackId(), track);
     }
 
     public ITunesTrack getTrackById(int trackId) {

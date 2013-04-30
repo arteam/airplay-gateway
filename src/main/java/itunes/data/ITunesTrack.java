@@ -1,49 +1,12 @@
 
 package itunes.data;
 
-/*
-    Track properties example xml:
-	<key>401</key>
-	<dict>
-		<key>Track ID</key><integer>401</integer>
-		<key>Name</key><string>The Hollow</string>
-		<key>Artist</key><string>A Perfect Circle</string>
-		<key>Album</key><string>Mer de Noms</string>
-		<key>Genre</key><string>Progressive Rock</string>
-		<key>Kind</key><string>MPEG audio file</string>
-		<key>Size</key><integer>4299529</integer>
-		<key>Total Time</key><integer>179043</integer>
-		<key>Track Number</key><integer>1</integer>
-		<key>Track Count</key><integer>12</integer>
-		<key>Year</key><integer>2000</integer>
-		<key>Date Modified</key><date>2006-07-21T21:48:32Z</date>
-		<key>Date Added</key><date>2005-10-20T02:43:19Z</date>
-		<key>Bit Rate</key><integer>192</integer>
-		<key>Sample Rate</key><integer>44100</integer>
-		<key>Comments</key><string>Track 1</string>
-		<key>Play Count</key><integer>5</integer>
-		<key>Play Date</key><integer>3236345492</integer>
-		<key>Play Date UTC</key><date>2006-07-21T21:51:32Z</date>
-		<key>Persistent ID</key><string>51C977107B2FE940</string>
-		<key>Track Type</key><string>File</string>
-		<key>Location</key><string>file://localhost/E:/itunes/A%20Perfect%20Circle/Mer%20de%20Noms/01%20The%20Hollow.mp3</string>
-		<key>File Folder Count</key><integer>4</integer>
-		<key>Library Folder Count</key><integer>1</integer>
-		<key>Disabled</key><true/>
-		<key>Skip Count</key><integer>1</integer>
-		<key>Skip Date</key><date>2007-04-21T00:25:49Z</date>
-		<key>Composer</key><string>Trent Reznor</string>
-		<key>Album Artist</key><string>The Red Jumpsuit Apparatus</string>
-		<key>Artwork Count</key><integer>1</integer>
-		<key>Grouping</key><string>Alternative General</string>
-		<key>Disc Number</key><integer>1</integer>
-		<key>Disc Count</key><integer>2</integer>
-		<key>BPM</key><integer>192</integer>
-	</dict>
-*/
+/**
+ * Represents info about iTunes track (mp3 file or mpeg4 video)
+ */
 public class ITunesTrack {
 
-    private int trackID = -1;
+    private int trackId = -1;
     private String name;
     private String artist;
     private String album;
@@ -92,12 +55,12 @@ public class ITunesTrack {
      */
     private int playlistTrackNumber = -1;
 
-    public int getTrackID() {
-        return trackID;
+    public int getTrackId() {
+        return trackId;
     }
 
-    public void setTrackID(int trackID) {
-        this.trackID = trackID;
+    public void setTrackId(int trackId) {
+        this.trackId = trackId;
     }
 
     public String getName() {
@@ -447,7 +410,7 @@ public class ITunesTrack {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ItunesTrack{").append("\n");
-        sb.append(" trackID=").append(trackID).append("\n");
+        sb.append(" trackID=").append(trackId).append("\n");
         sb.append(" name=").append(name).append("\n");
         sb.append(" artist=").append(artist).append("\n");
         sb.append(" album=").append(album).append("\n");

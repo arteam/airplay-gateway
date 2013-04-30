@@ -3,11 +3,12 @@ package itunes.parser;
 import org.jetbrains.annotations.NotNull;
 
 import com.google.inject.Inject;
+
 import javax.xml.parsers.SAXParser;
 import java.io.File;
 
 /**
- * Itunes library parser
+ * Itunes library SAX parser
  */
 public class ITunesLibraryParser {
 
@@ -21,7 +22,7 @@ public class ITunesLibraryParser {
         try {
             sp.parse(new File(itunesLibraryFilePath), libraryXmlTagHandler);
         } catch (Exception e) {
-            // omit exception
+            // omit exceptions
         }
     }
 
