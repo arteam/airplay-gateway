@@ -1,4 +1,4 @@
-package command;
+package airplay.command;
 
 import org.jetbrains.annotations.NotNull;
 

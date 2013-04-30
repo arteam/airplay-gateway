@@ -1,4 +1,4 @@
-package gateway;
+package airplay;
 
 import model.Device;
 import org.jetbrains.annotations.NotNull;

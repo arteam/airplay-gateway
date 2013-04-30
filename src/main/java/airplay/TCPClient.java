@@ -1,6 +1,6 @@
-package gateway;
+package airplay;
 
-import command.DeviceCommand;
+import airplay.command.DeviceCommand;
 import model.Device;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
