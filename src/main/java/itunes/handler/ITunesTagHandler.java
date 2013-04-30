@@ -1,24 +1,31 @@
 package itunes.handler;
 
-import itunes.data.ITunesLibrary;
 import itunes.handler.constants.LibraryProperty;
 import itunes.handler.constants.TagType;
 import itunes.parser.Tag;
 
+import javax.inject.Inject;
+
+/**
+ * Base handler for library.xml file
+ */
 public class ITunesTagHandler {
 
-    private final PropertyTagHandler trackPropertyTagHandler;
+    private final TrackTagHandler trackTagHandler;
 
-    private PropertyTagHandler propertyTagHandler;
+    private TagHandler tagHandler;
 
-    public ITunesTagHandler(ITunesLibrary library) {
-        trackPropertyTagHandler = new TrackPropertyTagHandler(library);
-        propertyTagHandler = new LibraryPropertyTagHandler(library);
+    @Inject
+    public ITunesTagHandler(TrackTagHandler trackTagHandler,
+                            LibraryTagHandler libraryTagHandler) {
+        this.trackTagHandler = trackTagHandler;
+        tagHandler = libraryTagHandler;
     }
+
 
     public void handleTag(Tag tag) {
         if (tag.getName().equals(TagType.KEY) && tag.getInnerText().equals(LibraryProperty.TRACKS.getName())) {
-            propertyTagHandler = trackPropertyTagHandler;
+            tagHandler = trackTagHandler;
         }
 
 		/*
@@ -32,9 +39,9 @@ public class ITunesTagHandler {
 		 * 
 		 */
         if (tag.getName().equals(TagType.KEY)) {
-            propertyTagHandler.key(tag.getInnerText());
+            tagHandler.key(tag.getInnerText());
         } else {
-            propertyTagHandler.value(tag);
+            tagHandler.value(tag);
         }
     }
 

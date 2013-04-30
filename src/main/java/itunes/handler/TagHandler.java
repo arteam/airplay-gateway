@@ -5,7 +5,7 @@ import itunes.parser.Tag;
 /**
  * Handler for properties in library.xml
  */
-interface PropertyTagHandler {
+interface TagHandler {
 
     public void key(String propertyName);
 

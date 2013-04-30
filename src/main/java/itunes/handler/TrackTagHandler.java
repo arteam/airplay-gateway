@@ -1,25 +1,23 @@
 package itunes.handler;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import itunes.data.ITunesLibrary;
 import itunes.data.ITunesTrack;
-import itunes.handler.constants.LibraryProperty;
 import itunes.handler.constants.TrackProperty;
 import itunes.parser.Tag;
 
-import java.util.HashSet;
-import java.util.Set;
+/**
+ * Handler for track tag
+ */
+class TrackTagHandler implements TagHandler {
 
-class TrackPropertyTagHandler implements PropertyTagHandler {
+    @Inject
+    private ITunesLibrary library;
 
-    protected ITunesLibrary library = null;
-    protected ITunesTrack currentTrack = null;
+    private ITunesTrack currentTrack;
 
-    protected TrackProperty currentProperty = TrackProperty.NO_PROPERTY;
-
-
-    public TrackPropertyTagHandler(ITunesLibrary library) {
-        this.library = library;
-    }
+    private TrackProperty currentProperty = TrackProperty.NO_PROPERTY;
 
     @Override
     public void key(String propertyName) {
@@ -163,7 +161,7 @@ class TrackPropertyTagHandler implements PropertyTagHandler {
                 // example property: <key>BPM</key><integer>192</integer>
                 currentTrack.setBPM(DataParser.parseInteger(TrackProperty.BPM, propertyValue));
             } else {
-                System.out.println("Supported Itunes Track Property Was Not Handled Correctly: "+ currentProperty);
+                System.out.println("Supported Itunes Track Property Was Not Handled Correctly: " + currentProperty);
             }
         } catch (Exception e) {
             System.err.println("Error occured during track property parsing: " + e.getMessage());

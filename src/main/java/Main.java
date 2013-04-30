@@ -4,7 +4,7 @@ import com.google.inject.Injector;
 import command.PlayCommand;
 import command.ScrubCommand;
 import gateway.TCPClient;
-import itunes.ITunesLibraryParser;
+import itunes.ITunesLibraryProvider;
 import itunes.data.ITunesLibrary;
 import jmdns.JmdnsGateway;
 import model.Device;
@@ -27,7 +27,7 @@ public class Main {
     private JmdnsGateway jmdnsGateway;
 
     @Inject
-    private ITunesLibraryParser iTunesLibraryParser;
+    private ITunesLibraryProvider iTunesLibraryProvider;
 
     public void start() {
         jmdnsGateway.start();
@@ -63,7 +63,7 @@ public class Main {
 
 
     public void parseLibraryXml() {
-        ITunesLibrary iTunesLibrary = iTunesLibraryParser.parseLibrary("./src/main/resources/library.xml");
+        ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get("./src/main/resources/library.xml");
         System.out.println(iTunesLibrary);
     }
 
