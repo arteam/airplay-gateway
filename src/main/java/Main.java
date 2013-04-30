@@ -1,9 +1,9 @@
 import com.google.inject.*;
-import command.PlayCommand;
-import command.ScrubCommand;
+import airplay.command.PlayCommand;
+import airplay.command.ScrubCommand;
 import database.ContentDao;
 import database.DeviceDao;
-import gateway.TCPClient;
+import airplay.TCPClient;
 import itunes.ITunesLibraryProvider;
 import itunes.data.ITunesLibrary;
 import itunes.data.ITunesTrack;
