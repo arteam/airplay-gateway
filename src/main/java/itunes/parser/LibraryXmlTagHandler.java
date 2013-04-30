@@ -53,8 +53,12 @@ public class LibraryXmlTagHandler extends DefaultHandler {
 
     private static final String PLAYLISTS = "Playlists";
 
+    private final ITunesTagHandler tagHandler;
+
     @Inject
-    private ITunesTagHandler tagHandler;
+    public LibraryXmlTagHandler(ITunesTagHandler tagHandler) {
+        this.tagHandler = tagHandler;
+    }
 
     @NotNull
     private Tag currentTag;

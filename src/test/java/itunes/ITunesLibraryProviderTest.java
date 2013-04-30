@@ -2,7 +2,6 @@ package itunes;
 
 import itunes.data.ITunesLibrary;
 import itunes.data.ITunesTrack;
-import junit.framework.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -32,7 +31,7 @@ public class ITunesLibraryProviderTest {
         assertEquals(iTunesLibrary.getLibraryPersistentID(), "E42C1259AE9A045A");
 
         ITunesTrack musicTrack = iTunesLibrary.getTrackById(81);
-        assertEquals(musicTrack.getTrackID(), 81);
+        assertEquals(musicTrack.getTrackId(), 81);
         assertEquals(musicTrack.getName(), "Afraid of The General");
         assertEquals(musicTrack.getArtist(), "Wick-it the Instigator");
         assertEquals(musicTrack.getAlbum(), "The Brothers of Chico Dusty");
@@ -60,7 +59,7 @@ public class ITunesLibraryProviderTest {
         assertEquals(musicTrack.getLibraryFolderCount(), 1);
 
         ITunesTrack videoTrack = iTunesLibrary.getTrackById(5456);
-        assertEquals(videoTrack.getTrackID(), 5456);
+        assertEquals(videoTrack.getTrackId(), 5456);
         assertEquals(videoTrack.getName(), "13. Blocks and Multithreading (November 2, 2010) - HD");
         assertEquals(videoTrack.getArtist(), "Paul Hegarty");
         assertEquals(videoTrack.getComposer(), "Stanford");
