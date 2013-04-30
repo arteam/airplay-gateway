@@ -2,7 +2,7 @@ package itunes.parser;
 
 import org.jetbrains.annotations.NotNull;
 
-import javax.inject.Inject;
+import com.google.inject.Inject;
 import javax.xml.parsers.SAXParser;
 import java.io.File;
 

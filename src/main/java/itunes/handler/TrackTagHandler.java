@@ -160,6 +160,33 @@ class TrackTagHandler implements TagHandler {
             } else if (currentProperty.equals(TrackProperty.BPM)) {
                 // example property: <key>BPM</key><integer>192</integer>
                 currentTrack.setBPM(DataParser.parseInteger(TrackProperty.BPM, propertyValue));
+            } else if (currentProperty.equals(TrackProperty.SORT_ALBUM)) {
+                // example property: <key>Sort Album</key><string>Brothers of Chico Dusty</string>
+                currentTrack.setSortAlbum(DataParser.parseString(TrackProperty.SORT_ALBUM, propertyValue));
+            } else if (currentProperty.equals(TrackProperty.RELEASE_DATE)) {
+                // example property: <key>Release Date</key><date>2010-11-10T11:48:31Z</date>
+                currentTrack.setReleaseDate(DataParser.parseDate(TrackProperty.RELEASE_DATE, propertyValue));
+            } else if (currentProperty.equals(TrackProperty.ITUNES_U)) {
+                // example property: <key>iTunesU</key><true/>
+                currentTrack.setiTunesU(DataParser.parseBoolean(TrackProperty.ITUNES_U, propertyValue));
+            } else if (currentProperty.equals(TrackProperty.UNPLAYED)) {
+                // example property: <key>Unplayed</key><true/>
+                currentTrack.setUnplayed(DataParser.parseBoolean(TrackProperty.UNPLAYED, propertyValue));
+            } else if (currentProperty.equals(TrackProperty.HAS_VIDEO)) {
+                // example property: <key>Has Video</key><true/>
+                currentTrack.setHasVideo(DataParser.parseBoolean(TrackProperty.HAS_VIDEO, propertyValue));
+            } else if (currentProperty.equals(TrackProperty.HD)) {
+                // example property: <key>HD</key><false/>
+                currentTrack.setHd(DataParser.parseBoolean(TrackProperty.HD, propertyValue));
+            } else if (currentProperty.equals(TrackProperty.VIDEO_WIDTH)) {
+                // example property: <key>Video Width</key><integer>1280</integer>
+                currentTrack.setVideoWith(DataParser.parseInteger(TrackProperty.VIDEO_WIDTH, propertyValue));
+            } else if (currentProperty.equals(TrackProperty.VIDEO_HEIGHT)) {
+                // example property: <key>Video Height</key><integer>720</integer>
+                currentTrack.setVideoHeight(DataParser.parseInteger(TrackProperty.VIDEO_HEIGHT, propertyValue));
+            } else if (currentProperty.equals(TrackProperty.MOVIE)) {
+                // example property: <key>Movie</key><true/>
+                currentTrack.setMovie(DataParser.parseBoolean(TrackProperty.MOVIE, propertyValue));
             } else {
                 System.out.println("Supported Itunes Track Property Was Not Handled Correctly: " + currentProperty);
             }

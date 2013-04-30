@@ -76,6 +76,15 @@ public enum TrackProperty {
     DISC_NUMBER("Disc Number"),
     DISC_COUNT("Disc Count"),
     BPM("BPM"),
+    SORT_ALBUM("Sort Album"),
+    RELEASE_DATE("Release Date"),
+    ITUNES_U("iTunesU"),
+    UNPLAYED("Unplayed"),
+    HAS_VIDEO("Has Video"),
+    HD("HD"),
+    VIDEO_WIDTH("Video Width"),
+    VIDEO_HEIGHT("Video Height"),
+    MOVIE("Movie"),
     NO_PROPERTY("NO PROPERTY");
 
     private static final Map<String, TrackProperty> properties = new HashMap<String, TrackProperty>();

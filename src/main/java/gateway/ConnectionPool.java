@@ -3,7 +3,7 @@ package gateway;
 import model.Device;
 import org.jetbrains.annotations.NotNull;
 
-import javax.inject.Singleton;
+import com.google.inject.Singleton;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Map;

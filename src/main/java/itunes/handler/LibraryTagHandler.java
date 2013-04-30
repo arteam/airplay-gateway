@@ -1,6 +1,6 @@
 package itunes.handler;
 
-import javax.inject.*;
+import com.google.inject.*;
 
 import itunes.data.ITunesLibrary;
 import itunes.handler.constants.LibraryProperty;
@@ -32,6 +32,9 @@ public class LibraryTagHandler implements TagHandler {
             } else if (currentProperty.equals(LibraryProperty.MINOR_VERSION)) {
                 //example property: <key>Minor Version</key><integer>1</integer>
                 library.setMinorVersion(DataParser.parseInteger(LibraryProperty.MINOR_VERSION, propertyValue));
+            } else if (currentProperty.equals(LibraryProperty.DATE)) {
+                //example property: <key>Date</key><date>2013-04-29T11:11:15Z</date>
+                library.setDate(DataParser.parseDate(LibraryProperty.DATE, propertyValue));
             } else if (currentProperty.equals(LibraryProperty.APPLICATION_VERSION)) {
                 //example property: <key>Application Version</key><string>7.0.1</string>
                 library.setApplicationVersion(DataParser.parseString(LibraryProperty.APPLICATION_VERSION, propertyValue));
