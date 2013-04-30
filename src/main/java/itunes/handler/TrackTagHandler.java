@@ -6,6 +6,7 @@ import itunes.data.ITunesLibrary;
 import itunes.data.ITunesTrack;
 import itunes.handler.constants.TrackProperty;
 import itunes.parser.Tag;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Handler for track tag
@@ -17,15 +18,16 @@ class TrackTagHandler implements TagHandler {
 
     private ITunesTrack currentTrack;
 
+    @NotNull
     private TrackProperty currentProperty = TrackProperty.NO_PROPERTY;
 
     @Override
-    public void key(String propertyName) {
+    public void key(@NotNull String propertyName) {
         currentProperty = TrackProperty.get(propertyName);
     }
 
     @Override
-    public void value(Tag propertyValue) {
+    public void value(@NotNull Tag propertyValue) {
         try {
             if (currentProperty.equals(TrackProperty.NO_PROPERTY)) {
                 // don't do anything...
