@@ -4,22 +4,26 @@ package model;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.security.MessageDigest;
 
-public class Device {
+public class Device implements Serializable {
 
     @Nullable
-    private final String id;
+    private String id;
 
     @NotNull
-    private final String name;
+    private String name;
 
     @NotNull
-    private final InetAddress address;
+    private InetAddress address;
 
-    private final int port;
+    private int port;
+
+    public Device() {
+    }
 
     public Device(@NotNull String name, @NotNull InetAddress address, int port) {
         this.name = name;
@@ -53,6 +57,22 @@ public class Device {
     @Nullable
     public String getId() {
         return id;
+    }
+
+    public void setId(@Nullable String id) {
+        this.id = id;
+    }
+
+    public void setName(@NotNull String name) {
+        this.name = name;
+    }
+
+    public void setAddress(@NotNull InetAddress address) {
+        this.address = address;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 
     @Override

@@ -1,15 +1,16 @@
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import com.google.inject.*;
 import command.PlayCommand;
 import command.ScrubCommand;
+import database.ContentDao;
+import database.DeviceDao;
 import gateway.TCPClient;
 import itunes.ITunesLibraryProvider;
 import itunes.data.ITunesLibrary;
+import itunes.data.ITunesTrack;
 import jmdns.JmdnsGateway;
+import model.Content;
 import model.Device;
 
-import com.google.inject.Inject;
 import java.util.List;
 
 /**
@@ -18,20 +19,50 @@ import java.util.List;
  *
  * @author Artem Prigoda
  */
+@Singleton
 public class Main {
 
-    @Inject
     private TCPClient tcpClient;
 
-    @Inject
     private JmdnsGateway jmdnsGateway;
 
-    @Inject
     private ITunesLibraryProvider iTunesLibraryProvider;
 
-    public void start() {
+    private ContentDao contentDao;
+
+    private DeviceDao deviceDao;
+
+    @Inject
+    public Main(TCPClient tcpClient, JmdnsGateway jmdnsGateway, ITunesLibraryProvider iTunesLibraryProvider,
+                ContentDao contentDao, DeviceDao deviceDao) {
+        this.tcpClient = tcpClient;
+        this.jmdnsGateway = jmdnsGateway;
+        this.iTunesLibraryProvider = iTunesLibraryProvider;
+        this.contentDao = contentDao;
+        this.deviceDao = deviceDao;
+    }
+
+    public void searchDevices() {
         jmdnsGateway.start();
-        List<Device> devices = jmdnsGateway.getDevices();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                jmdnsGateway.close();
+            }
+        });
+    }
+
+    public void parseLibraryXml() {
+        ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get("./src/main/resources/library.xml");
+        System.out.println(iTunesLibrary);
+        for (ITunesTrack track : iTunesLibrary.getTracks().values()) {
+            contentDao.addContent(new Content(track));
+        }
+        System.out.println(contentDao.contentList());
+    }
+
+    public void streamContent() {
+        List<Device> devices = deviceDao.getDevices();
 
         System.out.println(devices);
 
@@ -53,18 +84,6 @@ public class Main {
             tcpClient.sendCommand(new ScrubCommand(), device);
         }
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                jmdnsGateway.close();
-            }
-        });
-    }
-
-
-    public void parseLibraryXml() {
-        ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get("./src/main/resources/library.xml");
-        System.out.println(iTunesLibrary);
     }
 
     public static void main(String[] args) {
@@ -75,9 +94,9 @@ public class Main {
         });
 
         Main main = injector.getInstance(Main.class);
-        //main.start();
 
+        main.searchDevices();
         main.parseLibraryXml();
-
+        main.streamContent();
     }
 }
