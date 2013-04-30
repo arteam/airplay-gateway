@@ -14,7 +14,7 @@ import java.net.URLDecoder;
  */
 public class Content {
 
-    private final int id;
+    private final String id;
 
     @NotNull
     private final String name;
@@ -23,26 +23,40 @@ public class Content {
     private final String artist;
 
     @NotNull
-    private final ContentType type;
+    private final ContentFormat format;
 
     @NotNull
     private String url;
     private final boolean isHd;
 
+    private final ContentSource source;
+
     public Content(@NotNull ITunesTrack track) {
-        id = track.getTrackId();
+        id = String.valueOf(track.getTrackId());
         name = track.getName();
         artist = track.getArtist();
-        type = ContentType.get(track.getKind());
+        format = ContentFormat.get(track.getKind());
         try {
             url = URLDecoder.decode(track.getLocation(), "UTF-8");
         } catch (UnsupportedEncodingException e) {
             url = "";
         }
         isHd = track.isHd();
+        source = ContentSource.ITUNES;
     }
 
-    public int getId() {
+    public Content(String id, @NotNull String name, @NotNull String artist,
+                   @NotNull ContentFormat format, @NotNull String url, boolean hd, ContentSource source) {
+        this.id = id;
+        this.name = name;
+        this.artist = artist;
+        this.format = format;
+        this.url = url;
+        isHd = hd;
+        this.source = source;
+    }
+
+    public String getId() {
         return id;
     }
 
@@ -57,8 +71,8 @@ public class Content {
     }
 
     @NotNull
-    public ContentType getType() {
-        return type;
+    public ContentFormat getFormat() {
+        return format;
     }
 
     @NotNull
@@ -70,13 +84,17 @@ public class Content {
         return isHd;
     }
 
+    public ContentSource getSource() {
+        return source;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Content{");
         sb.append("id=").append(id);
         sb.append(", name='").append(name).append('\'');
         sb.append(", artist='").append(artist).append('\'');
-        sb.append(", type=").append(type);
+        sb.append(", type=").append(format);
         sb.append(", url='").append(url).append('\'');
         sb.append(", isHd=").append(isHd);
         sb.append('}');

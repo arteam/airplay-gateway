@@ -10,6 +10,7 @@ import itunes.data.ITunesTrack;
 import jmdns.JmdnsGateway;
 import model.Content;
 import model.Device;
+import server.TCPServer;
 
 import java.util.List;
 
@@ -32,15 +33,21 @@ public class Main {
 
     private DeviceDao deviceDao;
 
+    private TCPServer tcpServer;
+
     @Inject
     public Main(TCPClient tcpClient, JmdnsGateway jmdnsGateway, ITunesLibraryProvider iTunesLibraryProvider,
-                ContentDao contentDao, DeviceDao deviceDao) {
+                ContentDao contentDao, DeviceDao deviceDao, TCPServer tcpServer) {
         this.tcpClient = tcpClient;
         this.jmdnsGateway = jmdnsGateway;
         this.iTunesLibraryProvider = iTunesLibraryProvider;
         this.contentDao = contentDao;
         this.deviceDao = deviceDao;
+        this.tcpServer = tcpServer;
     }
+
+    @Inject
+
 
     public void searchDevices() {
         jmdnsGateway.start();
@@ -86,6 +93,16 @@ public class Main {
 
     }
 
+    public void startTcpServer() {
+        tcpServer.start();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                tcpServer.stop();
+            }
+        });
+    }
+
     public static void main(String[] args) {
         Injector injector = Guice.createInjector(new AbstractModule() {
             @Override
@@ -97,6 +114,8 @@ public class Main {
 
         main.searchDevices();
         main.parseLibraryXml();
-        main.streamContent();
+
+        //main.streamContent();
+        main.startTcpServer();
     }
 }

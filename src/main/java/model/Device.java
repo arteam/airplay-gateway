@@ -11,7 +11,7 @@ import java.security.MessageDigest;
 
 public class Device implements Serializable {
 
-    @Nullable
+    @NotNull
     private String id;
 
     @NotNull
@@ -23,6 +23,13 @@ public class Device implements Serializable {
     private int port;
 
     public Device() {
+    }
+
+    public Device(@NotNull String id, @NotNull String name, @NotNull InetAddress address, int port) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+        this.port = port;
     }
 
     public Device(@NotNull String name, @NotNull InetAddress address, int port) {
@@ -54,7 +61,7 @@ public class Device implements Serializable {
         return port;
     }
 
-    @Nullable
+    @NotNull
     public String getId() {
         return id;
     }
