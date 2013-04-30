@@ -1,0 +1,6 @@
+# Ignore config
+
+*.iml
+/.idea
+/target
+/build
