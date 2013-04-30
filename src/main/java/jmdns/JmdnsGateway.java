@@ -3,7 +3,7 @@ package jmdns;
 import model.Device;
 import org.jetbrains.annotations.NotNull;
 
-import javax.inject.*;
+import com.google.inject.*;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;

@@ -18,13 +18,14 @@ public enum LibraryProperty {
 
     MAJOR_VERSION("Major Version"),
     MINOR_VERSION("Minor Version"),
+    DATE("Date"),
     APPLICATION_VERSION("Application Version"),
     FEATURES("Features"),
     SHOW_CONTENT_RATINGS("Show Content Ratings"),
     MUSIC_FOLDER("Music Folder"),
     LIBRARY_PERSISTENT_ID("Library Persistent ID"),
     TRACKS("Tracks"),
-    NO_PROPERTY("NO PROPERTY");
+    NO_PROPERTY("NO_PROPERTY");
 
     private static final Map<String, LibraryProperty> properties = new HashMap<String, LibraryProperty>();
 

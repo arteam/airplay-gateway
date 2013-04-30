@@ -43,45 +43,54 @@ package itunes.data;
 */
 public class ITunesTrack {
 
-    protected int trackID = -1;
-    protected String name = null;
-    protected String artist = null;
-    protected String album = null;
-    protected String genre = null;
-    protected String kind = null;
-    protected int size = -1;
-    protected int totalTime = -1;
-    protected int trackNumber = -1;
-    protected int trackCount = -1;
-    protected int year = -1;
-    protected String dateModified = null;
-    protected String dateAdded = null;
-    protected int bitRate = -1;
-    protected int sampleRate = -1;
-    protected String comments = null;
-    protected int playCount = -1;
-    protected long playDate = -1;
-    protected String playDateUTC = null;
-    protected String persistentID = null;
-    protected String trackType = null;
-    protected String location = null;
-    protected int fileFolderCount = -1;
-    protected int libraryFolderCount = -1;
-    protected boolean disabled = false;
-    protected int skipCount = -1;
-    protected String skipDate = null;
-    protected String composer = null;
-    protected String albumArtist = null;
-    protected int artworkCount = -1;
-    protected String grouping = null;
-    protected int discNumber = -1;
-    protected int discCount = -1;
-    protected int BPM = -1;
+    private int trackID = -1;
+    private String name;
+    private String artist;
+    private String album;
+    private String genre;
+    private String kind;
+    private int size = -1;
+    private int totalTime = -1;
+    private int trackNumber = -1;
+    private int trackCount = -1;
+    private int year = -1;
+    private String dateModified;
+    private String dateAdded;
+    private int bitRate = -1;
+    private int sampleRate = -1;
+    private String comments;
+    private String releaseDate;
+    private boolean iTunesU;
+    private boolean unplayed;
+    private boolean hasVideo;
+    private boolean hd;
+    private int videoWith;
+    private int videoHeight;
+    private boolean movie;
+    private int playCount = -1;
+    private long playDate = -1;
+    private String playDateUTC;
+    private String persistentID;
+    private String trackType;
+    private String location;
+    private int fileFolderCount = -1;
+    private int libraryFolderCount = -1;
+    private boolean disabled = false;
+    private int skipCount = -1;
+    private String skipDate;
+    private String composer;
+    private String albumArtist;
+    private int artworkCount = -1;
+    private String sortAlbum;
+    private String grouping;
+    private int discNumber = -1;
+    private int discCount = -1;
+    private int BPM = -1;
 
     /**
      * the track number in a given playlist
      */
-    protected int playlistTrackNumber = -1;
+    private int playlistTrackNumber = -1;
 
     public int getTrackID() {
         return trackID;
@@ -363,6 +372,77 @@ public class ITunesTrack {
         BPM = bpm;
     }
 
+    public String getSortAlbum() {
+        return sortAlbum;
+    }
+
+    public void setSortAlbum(String sortAlbum) {
+        this.sortAlbum = sortAlbum;
+    }
+
+    public String getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public boolean isiTunesU() {
+        return iTunesU;
+    }
+
+    public void setiTunesU(boolean iTunesU) {
+        this.iTunesU = iTunesU;
+    }
+
+    public boolean isUnplayed() {
+        return unplayed;
+    }
+
+    public void setUnplayed(boolean unplayed) {
+        this.unplayed = unplayed;
+    }
+
+    public boolean isHasVideo() {
+        return hasVideo;
+    }
+
+    public void setHasVideo(boolean hasVideo) {
+        this.hasVideo = hasVideo;
+    }
+
+    public boolean isHd() {
+        return hd;
+    }
+
+    public void setHd(boolean hd) {
+        this.hd = hd;
+    }
+
+    public int getVideoWith() {
+        return videoWith;
+    }
+
+    public void setVideoWith(int videoWith) {
+        this.videoWith = videoWith;
+    }
+
+    public int getVideoHeight() {
+        return videoHeight;
+    }
+
+    public void setVideoHeight(int videoHeight) {
+        this.videoHeight = videoHeight;
+    }
+
+    public boolean isMovie() {
+        return movie;
+    }
+
+    public void setMovie(boolean movie) {
+        this.movie = movie;
+    }
 
     @Override
     public String toString() {
@@ -383,6 +463,14 @@ public class ITunesTrack {
         sb.append(" bitRate=").append(bitRate).append("\n");
         sb.append(" sampleRate=").append(sampleRate).append("\n");
         sb.append(" comments=").append(comments).append("\n");
+        sb.append(" releaseDate=").append(releaseDate).append("\n");
+        sb.append(" iTunesU=").append(iTunesU).append("\n");
+        sb.append(" unplayed=").append(unplayed).append("\n");
+        sb.append(" hasVideo=").append(hasVideo).append("\n");
+        sb.append(" hd=").append(hd).append("\n");
+        sb.append(" videoWith=").append(videoWith).append("\n");
+        sb.append(" videoHeight=").append(videoHeight).append("\n");
+        sb.append(" movie=").append(movie).append("\n");
         sb.append(" playCount=").append(playCount).append("\n");
         sb.append(" playDate=").append(playDate).append("\n");
         sb.append(" playDateUTC=").append(playDateUTC).append("\n");
@@ -397,7 +485,8 @@ public class ITunesTrack {
         sb.append(" composer=").append(composer).append("\n");
         sb.append(" albumArtist=").append(albumArtist).append("\n");
         sb.append(" artworkCount=").append(artworkCount).append("\n");
-        sb.append(" grouping=").append(grouping).append("\n");
+        sb.append(" artworkCount=").append(artworkCount).append("\n");
+        sb.append(" sortAlbum=").append(sortAlbum).append("\n");
         sb.append(" discNumber=").append(discNumber).append("\n");
         sb.append(" discCount=").append(discCount).append("\n");
         sb.append(" BPM=").append(BPM).append("\n");

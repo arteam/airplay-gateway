@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
-import javax.inject.*;
+import com.google.inject.*;
 import java.net.Socket;
 
 /**

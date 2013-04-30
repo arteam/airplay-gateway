@@ -17,6 +17,7 @@ public class ITunesLibrary {
 
     private int majorVersion = -1;
     private int minorVersion = -1;
+    private String date;
     private String applicationVersion;
     private int features = -1;
     private boolean showContentRatings = false;
@@ -105,11 +106,20 @@ public class ITunesLibrary {
         this.libraryXmlPath = libraryXmlPath;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ItunesLibrary{");
         sb.append("majorVersion=").append(majorVersion).append("\n");
         sb.append("minorVersion=").append(minorVersion).append("\n");
+        sb.append("date=").append(date).append("\n");
         sb.append("applicationVersion=").append(applicationVersion).append("\n");
         sb.append("features=").append(features).append("\n");
         sb.append("showContentRatings=").append(showContentRatings).append("\n");

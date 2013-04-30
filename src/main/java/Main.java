@@ -9,7 +9,7 @@ import itunes.data.ITunesLibrary;
 import jmdns.JmdnsGateway;
 import model.Device;
 
-import javax.inject.Inject;
+import com.google.inject.Inject;
 import java.util.List;
 
 /**

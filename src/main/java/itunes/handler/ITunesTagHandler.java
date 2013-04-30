@@ -4,7 +4,7 @@ import itunes.handler.constants.LibraryProperty;
 import itunes.handler.constants.TagType;
 import itunes.parser.Tag;
 
-import javax.inject.Inject;
+import com.google.inject.Inject;
 
 /**
  * Base handler for library.xml file
