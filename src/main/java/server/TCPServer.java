@@ -5,7 +5,6 @@ import com.google.inject.Singleton;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,8 +17,8 @@ import java.util.concurrent.Executors;
 @Singleton
 public class TCPServer {
 
-    private static final int SIZE = 2;
-    private final ExecutorService executor = Executors.newFixedThreadPool(SIZE);
+    private static final int SIZE = 1;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private ServerSocket serverSocket;
 
     public void start() {
@@ -28,44 +27,65 @@ public class TCPServer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        for (int i = 0; i < SIZE; i++) {
-            executor.submit(new Runnable() {
-                @Override
-                public void run() {
-                    while (!Thread.currentThread().isInterrupted()) {
-                        acceptConnection(serverSocket);
+
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                while (!Thread.currentThread().isInterrupted()) {
+                    try {
+                        Socket socket = serverSocket.accept();
+                        handleConnection(socket);
+                    } catch (IOException e) {
+                        System.err.println(e);
                     }
                 }
-            });
-        }
+            }
+        });
         System.out.println("Start TCP server at " + serverSocket);
     }
 
-    private void acceptConnection(ServerSocket serverSocket) {
-        Socket socket = null;
-        BufferedReader reader = null;
-        BufferedWriter writer = null;
+    private void handleConnection(Socket socket) {
+        PrintWriter out = null;
+        BufferedReader in = null;
         try {
-            socket = serverSocket.accept();
-            reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
+            System.out.println("Open " + socket);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream(), true);
+            String command;
+            while ((command = in.readLine()) != null) {
+                System.out.println(command);
+                try {
+                    String output;
+                    if (command.equals("listDevices")) {
+                        output = "Devices";
+                    } else if (command.equals("listContent")) {
+                        output = "Contents";
+                    } else if (command.startsWith("play")) {
+                        String id = command.substring(5, command.length());
+                        output = "Played " + id;
+                    } else {
+                        output = "Unknown command " + command;
+                    }
+                    System.out.println(output);
+                    out.println(output);
+                } catch (Exception e) {
+                    System.err.println("Command error " + e);
+                    out.println("Server error");
+                }
             }
-            writer.write("OK!");
-            writer.flush();
         } catch (IOException e) {
-            System.err.println(e);
+            System.err.println("I/O error " + e);
         } finally {
             try {
+                if (in != null) in.close();
+                if (out != null) out.close();
                 if (socket != null) socket.close();
-                if (reader != null) reader.close();
-                if (writer != null) writer.close();
             } catch (IOException e) {
-                System.err.println(e);
+                System.err.println("I/O error " + e);
             }
+            System.out.println("Close " + socket);
         }
+
     }
 
     public void stop() {
