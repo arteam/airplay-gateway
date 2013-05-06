@@ -7,6 +7,8 @@ import model.ContentSource;
 import model.Device;
 import org.junit.Test;
 import server.JsonConverter;
+import server.command.Action;
+import server.command.Request;
 
 import java.net.Inet4Address;
 
@@ -34,5 +36,32 @@ public class JsonConverterTest {
         String json = jsonConverter.toJson(device);
         System.out.println(json);
         Assert.assertEquals("{\"id\":\"FD902B2431E2ABB97886A8A6DC5F0B25\",\"address\":\"192.168.52.15\",\"name\":\"Boss AppleTV\"}", json);
+    }
+
+    @Test
+    public void testGetDevices() throws Exception {
+        String json = "{\"action\":\"getDevices\"}";
+        Request request = jsonConverter.fromJson(json);
+        System.out.println(request);
+        Assert.assertEquals(Action.DEVICES, request.getAction());
+        Assert.assertTrue(request.getParams().isEmpty());
+    }
+
+    @Test
+    public void testGetContent() throws Exception {
+        String json = "{\"action\":\"getContent\"}";
+        Request request = jsonConverter.fromJson(json);
+        System.out.println(request);
+        Assert.assertEquals(Action.CONTENT, request.getAction());
+        Assert.assertTrue(request.getParams().isEmpty());
+    }
+
+    @Test
+    public void testPlay() throws Exception {
+        String json = "{\"action\":\"play\", \"params\" : {\"contentId\" : 11, \"deviceId\" : 7}}";
+        Request request = jsonConverter.fromJson(json);
+        System.out.println(request);
+        Assert.assertEquals(Action.PLAY, request.getAction());
+        Assert.assertTrue(!request.getParams().isEmpty());
     }
 }
