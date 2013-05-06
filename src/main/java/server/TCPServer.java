@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
 public class TCPServer {
 
     private static final int SIZE = 1;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newCachedThreadPool();
     private ServerSocket serverSocket;
 
     public void start() {
@@ -27,20 +27,22 @@ public class TCPServer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                while (!Thread.currentThread().isInterrupted()) {
-                    try {
-                        Socket socket = serverSocket.accept();
+        while (!Thread.currentThread().isInterrupted()) {
+            try {
+                final Socket socket = serverSocket.accept();
+                executor.submit(new Runnable() {
+                    @Override
+                    public void run() {
                         handleConnection(socket);
-                    } catch (IOException e) {
-                        System.err.println(e);
                     }
-                }
+
+                });
+            } catch (IOException e) {
+                System.err.println(e);
             }
-        });
+        }
+
+
         System.out.println("Start TCP server at " + serverSocket);
     }
 
@@ -85,7 +87,6 @@ public class TCPServer {
             }
             System.out.println("Close " + socket);
         }
-
     }
 
     public void stop() {
