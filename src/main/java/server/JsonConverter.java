@@ -1,16 +1,17 @@
 package server;
 
+import com.google.gson.*;
+import com.google.inject.Inject;
 import model.Content;
 import model.Device;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import server.command.Action;
 import server.command.Request;
 
-import java.util.Collections;
+import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Date: 30.04.13
@@ -20,42 +21,67 @@ import java.util.Map;
  */
 public class JsonConverter {
 
-    JSONParser parser = new JSONParser();
-
-    @SuppressWarnings("unchecked")
-    public String toJson(final Content content) {
-        return new JSONObject() {{
-            put("id", content.getId());
-            put("name", content.getName());
-            put("artist", content.getArtist());
-            put("isHd", content.isHd());
-            put("format", content.getFormat().getName());
-            put("source", content.getSource().getName());
-        }}.toString();
-    }
-
-    @SuppressWarnings("unchecked")
-    public String toJson(final Device device) {
-        return new JSONObject() {{
-            put("id", device.getId());
-            put("name", device.getName());
-            put("address", device.getAddress().getHostAddress());
-        }}.toString();
-    }
-
-
-    @SuppressWarnings("unchecked")
-    public Request fromJson(String json) {
-        try {
-            JSONObject jsonObject = (JSONObject) parser.parse(json);
-            String action = (String) jsonObject.get("action");
-            Map<String, Object> params = (Map<String, Object>) jsonObject.get("params");
-            if (params == null) {
-                params = Collections.EMPTY_MAP;
-            }
-            return new Request(Action.getByCode(action), params);
-        } catch (ParseException e) {
-            throw new IllegalArgumentException(e);
+    private static final JsonSerializer<Content> CONTENT_SERIALIZER = new JsonSerializer<Content>() {
+        @Override
+        public JsonElement serialize(final Content content, Type type,
+                                     JsonSerializationContext jsonSerializationContext) {
+            JsonObject json = new JsonObject();
+            json.addProperty("id", content.getId());
+            json.addProperty("artist", content.getArtist());
+            json.addProperty("name", content.getName());
+            json.addProperty("isHd", content.isHd());
+            json.addProperty("format", content.getFormat().getName());
+            json.addProperty("source", content.getSource().getName());
+            return json;
         }
+    };
+    private static final JsonSerializer<Device> DEVICE_SERIALIZER = new JsonSerializer<Device>() {
+        @Override
+        public JsonElement serialize(final Device device, Type type,
+                                     JsonSerializationContext jsonSerializationContext) {
+            JsonObject json = new JsonObject();
+            json.addProperty("id", device.getId());
+            json.addProperty("name", device.getName());
+            json.addProperty("address", device.getAddress().getHostAddress());
+            return json;
+        }
+    };
+
+    private static final JsonDeserializer<Request> REQUEST_DESERIALIZER = new JsonDeserializer<Request>() {
+        @Override
+        public Request deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject jsonObject = json.getAsJsonObject();
+            String action = jsonObject.get("action").getAsString();
+            JsonObject paramsMap = jsonObject.getAsJsonObject("params");
+
+            Map<String, String> params = new HashMap<String, String>();
+            if (paramsMap != null) {
+                for (Map.Entry<String, JsonElement> entry :
+                        paramsMap.entrySet()) {
+                    JsonPrimitive jsonPrimitive = entry.getValue().getAsJsonPrimitive();
+                    params.put(entry.getKey(), jsonPrimitive.getAsString());
+                }
+            }
+
+            return new Request(Action.getByCode(action), params);
+        }
+    };
+
+    private final Gson gson;
+
+    public JsonConverter() {
+        gson = new GsonBuilder()
+                .registerTypeAdapter(Content.class, CONTENT_SERIALIZER)
+                .registerTypeAdapter(Device.class, DEVICE_SERIALIZER)
+                .registerTypeAdapter(Request.class, REQUEST_DESERIALIZER)
+                .create();
+    }
+
+    public String toJson(Object content) {
+        return gson.toJson(content);
+    }
+
+    public Request fromJson(String json) {
+        return gson.fromJson(json, Request.class);
     }
 }

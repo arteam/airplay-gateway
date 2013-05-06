@@ -11,6 +11,7 @@ import server.command.Action;
 import server.command.Request;
 
 import java.net.Inet4Address;
+import java.util.Arrays;
 
 /**
  * Date: 30.04.13
@@ -27,7 +28,7 @@ public class JsonConverterTest {
         Content content = new Content("442342", "Walk from Colorado", "Set Jones", ContentFormat.MPEG_4, "url", false, ContentSource.ITUNES);
         String json = jsonConverter.toJson(content);
         System.out.println(json);
-        Assert.assertEquals("{\"id\":\"442342\",\"source\":\"iTunes\",\"name\":\"Walk from Colorado\",\"format\":\"MPEG-4\",\"artist\":\"Set Jones\",\"isHd\":false}", json);
+        Assert.assertEquals("{\"id\":\"442342\",\"artist\":\"Set Jones\",\"name\":\"Walk from Colorado\",\"isHd\":false,\"format\":\"MPEG-4\",\"source\":\"iTunes\"}", json);
     }
 
     @Test
@@ -35,7 +36,16 @@ public class JsonConverterTest {
         Device device = new Device("FD902B2431E2ABB97886A8A6DC5F0B25", "Boss AppleTV", Inet4Address.getByName("192.168.52.15"), 7000);
         String json = jsonConverter.toJson(device);
         System.out.println(json);
-        Assert.assertEquals("{\"id\":\"FD902B2431E2ABB97886A8A6DC5F0B25\",\"address\":\"192.168.52.15\",\"name\":\"Boss AppleTV\"}", json);
+        Assert.assertEquals("{\"id\":\"FD902B2431E2ABB97886A8A6DC5F0B25\",\"name\":\"Boss AppleTV\",\"address\":\"192.168.52.15\"}", json);
+    }
+
+    @Test
+    public void testDevices() throws Exception {
+        Device device1 = new Device("FD902B2431E2ABB97886A8A6DC5F0B25", "Boss AppleTV", Inet4Address.getByName("192.168.52.15"), 7000);
+        Device device2 = new Device("EA2323349005247903487r3847231231", "Home AppleTV", Inet4Address.getByName("192.168.52.11"), 7000);
+        String json = jsonConverter.toJson(Arrays.asList(device1, device2));
+        System.out.println(json);
+        Assert.assertEquals("[{\"id\":\"FD902B2431E2ABB97886A8A6DC5F0B25\",\"name\":\"Boss AppleTV\",\"address\":\"192.168.52.15\"},{\"id\":\"EA2323349005247903487r3847231231\",\"name\":\"Home AppleTV\",\"address\":\"192.168.52.11\"}]", json);
     }
 
     @Test
@@ -63,5 +73,7 @@ public class JsonConverterTest {
         System.out.println(request);
         Assert.assertEquals(Action.PLAY, request.getAction());
         Assert.assertTrue(!request.getParams().isEmpty());
+        Assert.assertEquals(request.getParams().get("contentId"), "11");
+        Assert.assertEquals(request.getParams().get("deviceId"), "7");
     }
 }
