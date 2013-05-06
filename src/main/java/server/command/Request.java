@@ -16,9 +16,9 @@ public class Request {
     private final Action action;
 
     @NotNull
-    private final Map<String, Object> params;
+    private final Map<String, String> params;
 
-    public Request(@NotNull Action action, @NotNull Map<String, Object> params) {
+    public Request(@NotNull Action action, @NotNull Map<String, String> params) {
         this.action = action;
         this.params = params;
     }
@@ -29,7 +29,7 @@ public class Request {
     }
 
     @NotNull
-    public Map<String, Object> getParams() {
+    public Map<String, String> getParams() {
         return params;
     }
 

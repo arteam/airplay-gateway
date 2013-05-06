@@ -28,7 +28,7 @@ public class ContentDao {
     }
 
     @NotNull
-    public List<Content> contentList() {
+    public List<Content> getContentList() {
         return contentList;
     }
 }

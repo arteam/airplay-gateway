@@ -65,7 +65,7 @@ public class Main {
         for (ITunesTrack track : iTunesLibrary.getTracks().values()) {
             contentDao.addContent(new Content(track));
         }
-        System.out.println(contentDao.contentList());
+        System.out.println(contentDao.getContentList());
     }
 
     public void streamContent() {
