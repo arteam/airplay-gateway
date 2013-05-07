@@ -8,13 +8,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ScrubCommand extends DeviceCommand {
 
-    public ScrubCommand() {
-    }
-
-    public ScrubCommand(double position) {
-        params.put("position", String.valueOf(position));
-    }
-
     @Override
     @NotNull
     protected String requestType() {
