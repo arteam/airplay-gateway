@@ -2,10 +2,6 @@ package server;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import server.command.Request;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -16,25 +12,33 @@ import java.util.concurrent.Executors;
 /**
  * Date: 30.04.13
  * Time: 19:21
+ * TCP server for accepting request from IPhones
  *
  * @author Artem Prigoda
  */
 @Singleton
 public class TCPServer {
 
+    private final int port = 9099;
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private ServerSocket serverSocket;
 
     @Inject
     private ConnectionHandler connectionHandler;
 
+    /**
+     * Start server at port
+     */
     public void start() {
         try {
-            serverSocket = new ServerSocket(9099);
+            serverSocket = new ServerSocket(port);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+        System.out.println("Started TCP server at " + serverSocket);
+
+        // Handle connections
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 final Socket socket = serverSocket.accept();
@@ -50,10 +54,12 @@ public class TCPServer {
             }
         }
 
-        System.out.println("Started TCP server at " + serverSocket);
     }
 
 
+    /**
+     * Stop accepting requests and close socket
+     */
     public void stop() {
         executor.shutdown();
         try {

@@ -10,19 +10,18 @@ import server.command.Request;
 /**
  * Date: 06.05.13
  * Time: 20:10
+ * A dispatcher.
+ * Delegates work to actual workers according to an action and return a result
  *
  * @author Artem Prigoda
  */
 public class Dispatcher {
 
     @Inject
-    JsonConverter jsonConverter;
+    private DeviceDao deviceDao;
 
     @Inject
-    DeviceDao deviceDao;
-
-    @Inject
-    ContentDao contentDao;
+    private ContentDao contentDao;
 
     public Object process(@NotNull Request request) {
         Action action = request.getAction();

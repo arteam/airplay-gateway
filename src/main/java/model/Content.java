@@ -9,26 +9,50 @@ import java.net.URLDecoder;
 /**
  * Date: 30.04.13
  * Time: 16:33
+ * Represents an indexed content from different sources
  *
  * @author Artem Prigoda
  */
 public class Content {
 
+    /**
+     * Content unique id
+     */
+    @NotNull
     private final String id;
 
+    /**
+     * Content name
+     */
     @NotNull
     private final String name;
 
+    /**
+     * Content author(s) or performer
+     */
     @NotNull
     private final String artist;
 
+    /**
+     * Content format (MPEG-4, MP3, etc...)
+     */
     @NotNull
     private final ContentFormat format;
 
-    @NotNull
-    private String url;
+    /**
+     * Is HD-content
+     */
     private final boolean isHd;
 
+    /**
+     * Content locations
+     */
+    @NotNull
+    private final String url;
+
+    /**
+     * Content source (ITunes, Internet, user directory...)
+     */
     private final ContentSource source;
 
     public Content(@NotNull ITunesTrack track) {
@@ -36,16 +60,12 @@ public class Content {
         name = track.getName();
         artist = track.getArtist();
         format = ContentFormat.get(track.getKind());
-        try {
-            url = URLDecoder.decode(track.getLocation(), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            url = "";
-        }
         isHd = track.isHd();
         source = ContentSource.ITUNES;
+        url = decodeUrl(track.getLocation(), "UTF-8");
     }
 
-    public Content(String id, @NotNull String name, @NotNull String artist,
+    public Content(@NotNull String id, @NotNull String name, @NotNull String artist,
                    @NotNull ContentFormat format, @NotNull String url, boolean hd, ContentSource source) {
         this.id = id;
         this.name = name;
@@ -56,6 +76,7 @@ public class Content {
         this.source = source;
     }
 
+    @NotNull
     public String getId() {
         return id;
     }
@@ -84,20 +105,25 @@ public class Content {
         return isHd;
     }
 
+    @NotNull
     public ContentSource getSource() {
         return source;
     }
 
+    @NotNull
+    private static String decodeUrl(@NotNull String encodedUrl, @NotNull String encoding) {
+        try {
+            return URLDecoder.decode(encodedUrl, encoding);
+        } catch (UnsupportedEncodingException e) {
+            return "";
+        }
+    }
+
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Content{");
-        sb.append("id=").append(id);
-        sb.append(", name='").append(name).append('\'');
-        sb.append(", artist='").append(artist).append('\'');
-        sb.append(", type=").append(format);
-        sb.append(", url='").append(url).append('\'');
-        sb.append(", isHd=").append(isHd);
-        sb.append('}');
-        return sb.toString();
+        return "Content{" + "id=" + id + ", name=" + name +
+                ", artist=" + artist + ", format=" + format +
+                ", url='" + url + ", isHd=" + isHd +
+                ", source=" + source + '}';
     }
 }

@@ -11,6 +11,8 @@ import java.net.Socket;
 /**
  * Date: 06.05.13
  * Time: 21:23
+ * Handler of connection from clients
+ * Can be used from many threads
  *
  * @author Artem Prigoda
  */
@@ -65,7 +67,7 @@ public class ConnectionHandler {
      * Convert and process request
      *
      * @param jsonRequest request in json format
-     * @return respons in json format
+     * @return response in json format
      */
     @NotNull
     private String process(@NotNull String jsonRequest) {

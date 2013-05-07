@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Date: 27.04.13
@@ -15,17 +16,32 @@ import java.util.Map;
  */
 public class DeviceResponse {
 
+    /**
+     * Error code
+     */
     private final int code;
 
+    /**
+     * Message
+     */
     @NotNull
     private final String message;
 
+    /**
+     * HTTP Headers
+     */
     @NotNull
     private final Map<String, String> headers = new HashMap<String, String>();
 
+    /**
+     * Additional content
+     */
     @Nullable
     private String content = null;
 
+    /**
+     * Text params
+     */
     @NotNull
     private final Map<String, String> params = new HashMap<String, String>();
 
@@ -35,11 +51,20 @@ public class DeviceResponse {
         String httpResponse = headerSplit[0];
         String responseParted[] = httpResponse.split(" ");
         code = Integer.parseInt(responseParted[1]);
-        message = responseParted[2];
+        StringBuilder builder = new StringBuilder();
+        for (int i = 2; i < responseParted.length; i++) {
+            builder.append(responseParted[i]);
+            if (i < responseParted.length - 1) {
+                builder.append(" ");
+            }
+        }
+        message = builder.toString();
 
         for (int i = 1; i < headerSplit.length; i++) {
-            String headerValueSplit[] = headerSplit[i].split(":");
-            this.headers.put(headerValueSplit[0], headerValueSplit[1].trim());
+            String header = headerSplit[i];
+            int separatorIndex = header.indexOf(": ");
+            this.headers.put(header.substring(0, separatorIndex),
+                    header.substring(separatorIndex + 2, header.length()));
         }
 
         if (content == null) return;

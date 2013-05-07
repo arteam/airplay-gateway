@@ -9,21 +9,37 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.security.MessageDigest;
 
-public class Device implements Serializable {
+/**
+ * Date: 30.04.13
+ * Time: 12:11
+ * Represents an AIR device in the network
+ *
+ * @author Artem Prigoda
+ */
+public class Device {
 
+    /**
+     * Generated id of the device
+     */
     @NotNull
     private String id;
 
+    /**
+     * Specified device name
+     */
     @NotNull
     private String name;
 
+    /**
+     * Actual ip address of the device
+     */
     @NotNull
     private InetAddress address;
 
+    /**
+     * Client TCP-port of the device
+     */
     private int port;
-
-    public Device() {
-    }
 
     public Device(@NotNull String id, @NotNull String name, @NotNull InetAddress address, int port) {
         this.id = id;
@@ -36,15 +52,7 @@ public class Device implements Serializable {
         this.name = name;
         this.address = address;
         this.port = port;
-
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-            messageDigest.update(address.getAddress());
-            messageDigest.update(String.valueOf(port).getBytes("UTF-8"));
-            id = String.format("%032X", new BigInteger(1, messageDigest.digest()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        id = md5(address, port);
     }
 
     @NotNull
@@ -66,7 +74,7 @@ public class Device implements Serializable {
         return id;
     }
 
-    public void setId(@Nullable String id) {
+    public void setId(@NotNull String id) {
         this.id = id;
     }
 
@@ -80,6 +88,17 @@ public class Device implements Serializable {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    private static String md5(InetAddress address, int port) {
+        try {
+            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+            messageDigest.update(address.getAddress());
+            messageDigest.update(String.valueOf(port).getBytes("UTF-8"));
+            return String.format("%032X", new BigInteger(1, messageDigest.digest()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
