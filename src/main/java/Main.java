@@ -1,4 +1,4 @@
-import airplay.AirPlayClient;
+import airplay.AirPlayGateway;
 import com.google.inject.*;
 import airplay.command.PlayCommand;
 import airplay.command.ScrubCommand;
@@ -23,7 +23,7 @@ import java.util.List;
 @Singleton
 public class Main {
 
-    private AirPlayClient airPlayClient;
+    private AirPlayGateway airPlayGateway;
 
     private JmdnsGateway jmdnsGateway;
 
@@ -36,9 +36,9 @@ public class Main {
     private TCPServer tcpServer;
 
     @Inject
-    public Main(AirPlayClient airPlayClient, JmdnsGateway jmdnsGateway, ITunesLibraryProvider iTunesLibraryProvider,
+    public Main(AirPlayGateway airPlayGateway, JmdnsGateway jmdnsGateway, ITunesLibraryProvider iTunesLibraryProvider,
                 ContentDao contentDao, DeviceDao deviceDao, TCPServer tcpServer) {
-        this.airPlayClient = airPlayClient;
+        this.airPlayGateway = airPlayGateway;
         this.jmdnsGateway = jmdnsGateway;
         this.iTunesLibraryProvider = iTunesLibraryProvider;
         this.contentDao = contentDao;
@@ -80,7 +80,7 @@ public class Main {
 
         //String url = "ftp://assets:assets@192.168.52.112/mpeg2_mpa/SOUZMULTFILM/Bremenskie_muziikantii.mpg";
         String url = "http://192.168.52.15:8989/SUI/perlaws/samples/sample_iTunes.mov";
-        airPlayClient.sendCommand(new PlayCommand(url, 0.0), device);
+        airPlayGateway.sendCommand(new PlayCommand(url, 0.0), device);
 
         // Polling
         while (!Thread.currentThread().isInterrupted()) {
@@ -90,7 +90,7 @@ public class Main {
                 Thread.currentThread().interrupt();
                 continue;
             }
-            airPlayClient.sendCommand(new ScrubCommand(), device);
+            airPlayGateway.sendCommand(new ScrubCommand(), device);
         }
 
     }
@@ -116,7 +116,8 @@ public class Main {
 
         main.parseLibraryXml();
         List<Device> devices = main.searchDevices();
-        main.streamContent(devices);
-        //main.startTcpServer();
+        System.out.println(devices);
+        //main.streamContent(devices);
+        main.startTcpServer();
     }
 }
