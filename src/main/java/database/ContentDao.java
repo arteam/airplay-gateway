@@ -10,6 +10,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Date: 30.04.13
  * Time: 16:33
+ * DAO for work with indexed content
  *
  * @author Artem Prigoda
  */

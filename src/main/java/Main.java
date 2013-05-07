@@ -1,9 +1,9 @@
+import airplay.AirPlayClient;
 import com.google.inject.*;
 import airplay.command.PlayCommand;
 import airplay.command.ScrubCommand;
 import database.ContentDao;
 import database.DeviceDao;
-import airplay.TCPClient;
 import itunes.ITunesLibraryProvider;
 import itunes.data.ITunesLibrary;
 import itunes.data.ITunesTrack;
@@ -23,7 +23,7 @@ import java.util.List;
 @Singleton
 public class Main {
 
-    private TCPClient tcpClient;
+    private AirPlayClient airPlayClient;
 
     private JmdnsGateway jmdnsGateway;
 
@@ -36,9 +36,9 @@ public class Main {
     private TCPServer tcpServer;
 
     @Inject
-    public Main(TCPClient tcpClient, JmdnsGateway jmdnsGateway, ITunesLibraryProvider iTunesLibraryProvider,
+    public Main(AirPlayClient airPlayClient, JmdnsGateway jmdnsGateway, ITunesLibraryProvider iTunesLibraryProvider,
                 ContentDao contentDao, DeviceDao deviceDao, TCPServer tcpServer) {
-        this.tcpClient = tcpClient;
+        this.airPlayClient = airPlayClient;
         this.jmdnsGateway = jmdnsGateway;
         this.iTunesLibraryProvider = iTunesLibraryProvider;
         this.contentDao = contentDao;
@@ -46,18 +46,6 @@ public class Main {
         this.tcpServer = tcpServer;
     }
 
-    @Inject
-
-
-    public void searchDevices() {
-        jmdnsGateway.start();
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                jmdnsGateway.close();
-            }
-        });
-    }
 
     public void parseLibraryXml() {
         ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get("./src/main/resources/library.xml");
@@ -68,18 +56,33 @@ public class Main {
         System.out.println(contentDao.getContentList());
     }
 
-    public void streamContent() {
+    public List<Device> searchDevices() {
+        jmdnsGateway.start();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                jmdnsGateway.close();
+            }
+        });
+        jmdnsGateway.waitForDevices();
         List<Device> devices = deviceDao.getDevices();
-
         System.out.println(devices);
+        return devices;
+    }
+
+    public void streamContent(List<Device> devices) {
+        if (devices.isEmpty()) {
+            System.err.println("No available devices");
+            return;
+        }
 
         Device device = devices.get(0);
 
         //String url = "ftp://assets:assets@192.168.52.112/mpeg2_mpa/SOUZMULTFILM/Bremenskie_muziikantii.mpg";
         String url = "http://192.168.52.15:8989/SUI/perlaws/samples/sample_iTunes.mov";
-        tcpClient.sendCommand(new PlayCommand(url, 0.0), device);
+        airPlayClient.sendCommand(new PlayCommand(url, 0.0), device);
 
-        double position = 0.0;
+        // Polling
         while (!Thread.currentThread().isInterrupted()) {
             try {
                 Thread.sleep(2000);
@@ -87,8 +90,7 @@ public class Main {
                 Thread.currentThread().interrupt();
                 continue;
             }
-            //position += 20.0;
-            tcpClient.sendCommand(new ScrubCommand(), device);
+            airPlayClient.sendCommand(new ScrubCommand(), device);
         }
 
     }
@@ -112,10 +114,9 @@ public class Main {
 
         Main main = injector.getInstance(Main.class);
 
-        main.searchDevices();
         main.parseLibraryXml();
-
-        //main.streamContent();
-        main.startTcpServer();
+        List<Device> devices = main.searchDevices();
+        main.streamContent(devices);
+        //main.startTcpServer();
     }
 }

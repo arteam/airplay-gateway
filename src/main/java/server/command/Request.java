@@ -7,6 +7,7 @@ import java.util.Map;
 /**
  * Date: 06.05.13
  * Time: 17:47
+ * Represents a request from IPhone client
  *
  * @author Artem Prigoda
  */

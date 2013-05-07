@@ -8,6 +8,7 @@ import java.util.Map;
 /**
  * Date: 06.05.13
  * Time: 17:48
+ * Type of actions
  *
  * @author Artem Prigoda
  */
@@ -16,14 +17,15 @@ public enum Action {
     CONTENT("getContent"),
     PLAY("play");
 
-    private String code;
-    private static Map<String, Action> commands = new HashMap<String, Action>();
+    private static final Map<String, Action> commands = new HashMap<String, Action>();
 
     static {
         for (Action action : Action.values()) {
             commands.put(action.code, action);
         }
     }
+
+    private final String code;
 
     private Action(String code) {
         this.code = code;
