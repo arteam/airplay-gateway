@@ -20,12 +20,9 @@ public class TCPPClient {
         while ((userInput = stdIn.readLine()) != null) {
             out.println(userInput);
 
-            String response;
-            while ((response = in.readLine()) != null) {
-                System.out.println(response);
-            }
+            String response = in.readLine();
+            System.out.println(response);
         }
-
 
         out.close();
         in.close();

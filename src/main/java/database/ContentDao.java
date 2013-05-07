@@ -3,6 +3,7 @@ package database;
 import com.google.inject.Singleton;
 import model.Content;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -19,6 +20,16 @@ public class ContentDao {
 
     @NotNull
     private List<Content> contentList = new CopyOnWriteArrayList<Content>();
+
+    @Nullable
+    public Content getById(@NotNull String id) {
+        for (Content content : contentList) {
+            if (content.getId().equals(id)) {
+                return content;
+            }
+        }
+        return null;
+    }
 
     public void addContent(@NotNull Content content) {
         contentList.add(content);

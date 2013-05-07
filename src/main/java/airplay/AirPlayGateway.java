@@ -19,7 +19,7 @@ import java.net.Socket;
  * @author Artem Prigoda
  */
 @Singleton
-public class AirPlayClient {
+public class AirPlayGateway {
 
     private static final String CONTENT_LENGTH = "Content-Length:";
     @Inject

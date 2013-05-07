@@ -72,10 +72,22 @@ public class ConnectionHandler {
     @NotNull
     private String process(@NotNull String jsonRequest) {
         System.out.println(jsonRequest);
-        Request request = jsonConverter.fromJson(jsonRequest);
-        Object response = dispatcher.process(request);
-        String jsonResponse = jsonConverter.toJson(response);
-        System.out.println(jsonResponse);
-        return jsonResponse;
+        Request request;
+        try {
+            request = jsonConverter.fromJson(jsonRequest);
+        } catch (Exception e) {
+            System.err.println("Unable parse " + jsonRequest + " " + e);
+            return jsonConverter.toJson("Invalid request");
+        }
+
+        try {
+            Object response = dispatcher.process(request);
+            String jsonResponse = jsonConverter.toJson(response);
+            System.out.println(jsonResponse);
+            return jsonResponse;
+        } catch (Exception e) {
+            System.err.println("Internal error" + e);
+            return jsonConverter.toJson("Internal error");
+        }
     }
 }
