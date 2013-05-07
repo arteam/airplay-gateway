@@ -49,7 +49,7 @@ public enum LibraryProperty {
         LibraryProperty libraryProperty = properties.get(name);
         if (libraryProperty == null) {
             libraryProperty = NO_PROPERTY;
-            System.out.println("Unsupported Itunes Library Property: " + name);
+            //System.out.println("Unsupported Itunes Library Property: " + name);
         }
         return libraryProperty;
     }

@@ -2,6 +2,7 @@ package server;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -22,6 +23,7 @@ public class TCPServer {
     private final int port = 9099;
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private ServerSocket serverSocket;
+    private static final Logger log = Logger.getLogger(TCPServer.class);
 
     @Inject
     private ConnectionHandler connectionHandler;
@@ -36,7 +38,7 @@ public class TCPServer {
             throw new RuntimeException(e);
         }
 
-        System.out.println("Started TCP server at " + serverSocket);
+        log.info("Started TCP server at " + serverSocket);
 
         // Handle connections
         while (!Thread.currentThread().isInterrupted()) {
@@ -65,7 +67,7 @@ public class TCPServer {
         try {
             serverSocket.close();
         } catch (IOException e) {
-            System.err.println(e);
+            log.error(e);
         }
     }
 

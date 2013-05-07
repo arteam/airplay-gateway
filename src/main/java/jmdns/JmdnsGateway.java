@@ -2,6 +2,7 @@ package jmdns;
 
 import database.DeviceDao;
 import model.Device;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import com.google.inject.*;
@@ -26,6 +27,7 @@ import java.util.List;
 public class JmdnsGateway {
 
     private static final String SERVICE_TYPE = "_airplay._tcp.local.";
+    private static final Logger log = Logger.getLogger(JmdnsGateway.class);
 
     @NotNull
     private JmDNS jmDNS;
@@ -40,30 +42,30 @@ public class JmdnsGateway {
         @Override
         public void serviceAdded(ServiceEvent event) {
             // Device has been added. We should call "get service info" for resolving device
-            System.out.println(event + " added");
+            log.info(event + " added");
             ServiceInfo info = event.getDNS().getServiceInfo(event.getType(), event.getName());
-            System.out.println(info);
+            log.info(info);
         }
 
         @Override
         public void serviceRemoved(ServiceEvent event) {
             // Device has been removed. We should update device list
-            System.out.println(event + " removed");
+            log.info(event + " removed");
             ServiceInfo serviceInfo = jmDNS.getServiceInfo(SERVICE_TYPE, event.getName());
             Device device = new Device(serviceInfo.getName(), serviceInfo.getInetAddress(), serviceInfo.getPort());
             deviceDao.remove(device);
-            System.out.println("Removed " + device);
+            log.info("Removed " + device);
         }
 
         @Override
         public void serviceResolved(ServiceEvent event) {
             // Device resolved. We should add it to device list
-            System.out.println(event + " resolved");
+            log.info(event + " resolved");
             ServiceInfo serviceInfo = jmDNS.getServiceInfo(SERVICE_TYPE, event.getName());
 
             Device device = new Device(serviceInfo.getName(), serviceInfo.getInetAddress(), serviceInfo.getPort());
             deviceDao.add(device);
-            System.out.println("New " + device);
+            log.info("New " + device);
         }
     };
 
@@ -94,7 +96,7 @@ public class JmdnsGateway {
 
     public void waitForDevices() {
         ServiceInfo[] list = jmDNS.list(SERVICE_TYPE);
-        System.out.println(Arrays.asList(list));
+        log.info(Arrays.asList(list));
     }
 
 }

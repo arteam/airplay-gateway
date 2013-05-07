@@ -2,6 +2,7 @@ package airplay;
 
 import airplay.command.DeviceCommand;
 import model.Device;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,7 +22,9 @@ import java.net.Socket;
 @Singleton
 public class AirPlayGateway {
 
+    private static final Logger log = Logger.getLogger(AirPlayGateway.class);
     private static final String CONTENT_LENGTH = "Content-Length:";
+
     @Inject
     private ConnectionPool connectionPool;
 
@@ -38,7 +41,7 @@ public class AirPlayGateway {
             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             BufferedWriter output = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-            System.out.println(command);
+            log.info(command);
             String request = command.request() + "\n";
 
             output.write(request);
@@ -50,7 +53,7 @@ public class AirPlayGateway {
             String content = extractContent(input, contentLength);
 
             DeviceResponse deviceResponse = new DeviceResponse(headers, content);
-            System.out.println("Response: " + headers + content);
+            log.info("Response: " + headers + content);
             return deviceResponse;
         } catch (IOException e) {
             throw new RuntimeException(e);
