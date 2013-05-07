@@ -10,6 +10,8 @@ import itunes.data.ITunesTrack;
 import jmdns.JmdnsGateway;
 import model.Content;
 import model.Device;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggerFactory;
 import server.TCPServer;
 
 import java.util.List;
@@ -22,6 +24,8 @@ import java.util.List;
  */
 @Singleton
 public class Main {
+
+    private static final Logger log = Logger.getLogger(Main.class);
 
     private AirPlayGateway airPlayGateway;
 
@@ -49,11 +53,11 @@ public class Main {
 
     public void parseLibraryXml() {
         ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get("./src/main/resources/library.xml");
-        System.out.println(iTunesLibrary);
+        log.info(iTunesLibrary);
         for (ITunesTrack track : iTunesLibrary.getTracks().values()) {
             contentDao.addContent(new Content(track));
         }
-        System.out.println(contentDao.getContentList());
+        log.info(contentDao.getContentList());
     }
 
     public List<Device> searchDevices() {
@@ -66,13 +70,13 @@ public class Main {
         });
         jmdnsGateway.waitForDevices();
         List<Device> devices = deviceDao.getDevices();
-        System.out.println(devices);
+        log.info(devices);
         return devices;
     }
 
     public void streamContent(List<Device> devices) {
         if (devices.isEmpty()) {
-            System.err.println("No available devices");
+            log.error("No available devices");
             return;
         }
 
@@ -116,7 +120,7 @@ public class Main {
 
         main.parseLibraryXml();
         List<Device> devices = main.searchDevices();
-        System.out.println(devices);
+        log.info(devices);
         //main.streamContent(devices);
         main.startTcpServer();
     }

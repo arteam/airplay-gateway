@@ -5,12 +5,15 @@ import itunes.data.ITunesLibrary;
 import itunes.data.ITunesTrack;
 import itunes.handler.constants.TrackProperty;
 import itunes.parser.Tag;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Handler for track tag
  */
 class TrackTagHandler implements TagHandler {
+
+    private static final Logger log = Logger.getLogger(TrackTagHandler.class);
 
     @Inject
     private ITunesLibrary library;
@@ -189,10 +192,10 @@ class TrackTagHandler implements TagHandler {
                 // example property: <key>Movie</key><true/>
                 currentTrack.setMovie(DataParser.parseBoolean(TrackProperty.MOVIE, propertyValue));
             } else {
-                System.out.println("Supported Itunes Track Property Was Not Handled Correctly: " + currentProperty);
+                log.info("Supported Itunes Track Property Was Not Handled Correctly: " + currentProperty);
             }
         } catch (Exception e) {
-            System.err.println("Error occured during track property parsing: " + e.getMessage());
+            log.error("Error occured during track property parsing: " + e.getMessage());
         }
 
         currentProperty = TrackProperty.NO_PROPERTY;

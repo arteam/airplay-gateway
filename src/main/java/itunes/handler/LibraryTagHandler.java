@@ -5,12 +5,15 @@ import com.google.inject.*;
 import itunes.data.ITunesLibrary;
 import itunes.handler.constants.LibraryProperty;
 import itunes.parser.Tag;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Handler for Itunes library tags
  */
 public class LibraryTagHandler implements TagHandler {
+
+    private static final Logger log = Logger.getLogger(LibraryTagHandler.class);
 
     @Inject
     private ITunesLibrary library;
@@ -53,10 +56,10 @@ public class LibraryTagHandler implements TagHandler {
                 //example property: <key>Library Persistent ID</key><string>4EC2FAC25152379E</string>
                 library.setLibraryPersistentID(DataParser.parseString(LibraryProperty.LIBRARY_PERSISTENT_ID, propertyValue));
             } else {
-                System.out.println("Supported Itunes Library Property Was Not Handled Correctly: " + currentProperty);
+                log.info("Supported Itunes Library Property Was Not Handled Correctly: " + currentProperty);
             }
         } catch (Exception e) {
-            System.err.println("Error occurred during library property parsing: " + e.getMessage());
+            log.error("Error occurred during library property parsing: " + e.getMessage());
         }
 
         //now that we've handled the data for this property, we need to reset ourselves back to "no property"

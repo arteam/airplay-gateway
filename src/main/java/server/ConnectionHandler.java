@@ -1,6 +1,7 @@
 package server;
 
 import com.google.inject.Inject;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import server.command.Request;
@@ -18,6 +19,8 @@ import java.net.Socket;
  */
 public class ConnectionHandler {
 
+    private static final Logger log = Logger.getLogger(ConnectionHandler.class);
+
     @Inject
     private JsonConverter jsonConverter;
 
@@ -33,7 +36,7 @@ public class ConnectionHandler {
         PrintWriter out = null;
         BufferedReader in = null;
         try {
-            System.out.println("Open " + socket);
+            log.info("Open " + socket);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
             String request;
@@ -42,10 +45,10 @@ public class ConnectionHandler {
                 out.println(response);
             }
         } catch (IOException e) {
-            System.err.println("I/O error " + e);
+            log.error("I/O error " + e);
         } finally {
             close(socket, in, out);
-            System.out.println("Close " + socket);
+            log.info("Close " + socket);
         }
     }
 
@@ -58,7 +61,7 @@ public class ConnectionHandler {
             if (out != null) out.close();
             if (socket != null) socket.close();
         } catch (IOException e) {
-            System.err.println("I/O error " + e);
+            log.error("I/O error " + e);
         }
     }
 
@@ -71,22 +74,22 @@ public class ConnectionHandler {
      */
     @NotNull
     private String process(@NotNull String jsonRequest) {
-        System.out.println(jsonRequest);
+        log.info("Request: " + jsonRequest);
         Request request;
         try {
             request = jsonConverter.fromJson(jsonRequest);
         } catch (Exception e) {
-            System.err.println("Unable parse " + jsonRequest + " " + e);
+            log.error("Unable parse " + jsonRequest, e);
             return jsonConverter.toJson("Invalid request");
         }
 
         try {
             Object response = dispatcher.process(request);
             String jsonResponse = jsonConverter.toJson(response);
-            System.out.println(jsonResponse);
+            log.info("Response: " + jsonResponse);
             return jsonResponse;
         } catch (Exception e) {
-            System.err.println("Internal error" + e);
+            log.error("Internal error", e);
             return jsonConverter.toJson("Internal error");
         }
     }
