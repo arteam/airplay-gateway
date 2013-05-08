@@ -21,7 +21,8 @@ import java.util.concurrent.Executors;
 public class TCPServer {
 
     private final int port = 9099;
-    private final ExecutorService executor = Executors.newCachedThreadPool();
+    private final ExecutorService connectionExecutor = Executors.newCachedThreadPool();
+    private final ExecutorService mainExecutor = Executors.newSingleThreadExecutor();
     private ServerSocket serverSocket;
     private static final Logger log = Logger.getLogger(TCPServer.class);
 
@@ -37,25 +38,27 @@ public class TCPServer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         log.info("Started TCP server at " + serverSocket);
+        mainExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                // Handle connections
+                while (!Thread.currentThread().isInterrupted()) {
+                    try {
+                        final Socket socket = serverSocket.accept();
+                        connectionExecutor.submit(new Runnable() {
+                            @Override
+                            public void run() {
+                                connectionHandler.handle(socket);
+                            }
 
-        // Handle connections
-        while (!Thread.currentThread().isInterrupted()) {
-            try {
-                final Socket socket = serverSocket.accept();
-                executor.submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        connectionHandler.handle(socket);
+                        });
+                    } catch (IOException e) {
+                        System.err.println(e);
                     }
-
-                });
-            } catch (IOException e) {
-                System.err.println(e);
+                }
             }
-        }
-
+        });
     }
 
 
@@ -63,7 +66,8 @@ public class TCPServer {
      * Stop accepting requests and close socket
      */
     public void stop() {
-        executor.shutdown();
+        connectionExecutor.shutdown();
+        mainExecutor.shutdown();
         try {
             serverSocket.close();
         } catch (IOException e) {

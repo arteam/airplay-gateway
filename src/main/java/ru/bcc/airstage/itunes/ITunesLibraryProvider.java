@@ -1,6 +1,7 @@
 package ru.bcc.airstage.itunes;
 
 import com.google.inject.*;
+import org.apache.log4j.Logger;
 import ru.bcc.airstage.itunes.data.ITunesLibrary;
 import ru.bcc.airstage.itunes.parser.ITunesLibraryParser;
 import org.jetbrains.annotations.NotNull;
@@ -20,6 +21,8 @@ import javax.xml.parsers.SAXParserFactory;
 @Singleton
 public class ITunesLibraryProvider {
 
+    private static final Logger log = Logger.getLogger(ITunesLibraryProvider.class);
+
     @Inject
     private ItunesLibraryFinder itunesLibraryFinder;
 
@@ -31,7 +34,10 @@ public class ITunesLibraryProvider {
         Injector injector = Guice.createInjector(new ITunesModule(iTunesLibrary));
         ITunesLibraryParser parser = injector.getInstance(ITunesLibraryParser.class);
 
+        log.info("Path to library " + itunesLibraryFilePath);
+        log.info("Start parsing...");
         parser.parse(itunesLibraryFilePath);
+        log.info(iTunesLibrary);
         return iTunesLibrary;
     }
 

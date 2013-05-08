@@ -125,7 +125,7 @@ public class ItunesLibraryFinder {
      * @param libraryFilename path to file
      * @return true if ITunes library
      */
-    public boolean verifyLibrary(@NotNull File libraryFilename) {
+    private boolean verifyLibrary(@NotNull File libraryFilename) {
         FileReader fileReader = null;
         try {
             fileReader = new FileReader(libraryFilename);
@@ -144,8 +144,5 @@ public class ItunesLibraryFinder {
                 log.error("I/O error", e);
             }
         }
-
     }
-
-
 }

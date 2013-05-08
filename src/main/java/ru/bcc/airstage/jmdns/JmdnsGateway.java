@@ -94,7 +94,7 @@ public class JmdnsGateway {
 
     public void waitForDevices() {
         ServiceInfo[] list = jmDNS.list(SERVICE_TYPE);
-        log.info(Arrays.asList(list));
+        log.info("Service info: " + Arrays.asList(list));
     }
 
 }
