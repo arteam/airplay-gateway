@@ -68,6 +68,7 @@ public class Main {
                 jmdnsGateway.close();
             }
         });
+        log.info("Device dicovering...");
         jmdnsGateway.waitForDevices();
         List<Device> devices = deviceDao.getDevices();
         log.info(devices);
@@ -120,7 +121,6 @@ public class Main {
 
         main.parseLibraryXml();
         List<Device> devices = main.searchDevices();
-        log.info(devices);
         //main.streamContent(devices);
         main.startTcpServer();
     }
