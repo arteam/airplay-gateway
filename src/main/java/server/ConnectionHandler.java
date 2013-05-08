@@ -28,6 +28,8 @@ public class ConnectionHandler {
     @Inject
     private Dispatcher dispatcher;
 
+
+
     /**
      * Handle connection from client
      *
@@ -74,7 +76,7 @@ public class ConnectionHandler {
      * @return response in json format
      */
     @NotNull
-    private String process(@NotNull String jsonRequest) {
+    String process(@NotNull String jsonRequest) {
         log.info("Request: " + jsonRequest);
         Request request;
         try {
@@ -91,7 +93,7 @@ public class ConnectionHandler {
             return jsonResponse;
         } catch (Exception e) {
             log.error("Internal error", e);
-            return jsonConverter.toJson(new Response(1, "Internal error"));
+            return jsonConverter.toJson(new Response(2, "Internal error"));
         }
     }
 }

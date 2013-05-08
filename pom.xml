@@ -94,12 +94,26 @@
         </dependency>
 
         <dependency>
-        	<groupId>log4j</groupId>
-        	<artifactId>log4j</artifactId>
-        	<version>1.2.17</version>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
         </dependency>
 
+        <!-- It's patched version of Unitils from the MW Team local repo. If the project doesn't build
+             you can change UnitilsLoggableTestRunner in tests to bundled UnitilsJUnit4TestClassRunner -->
+        <dependency>
+            <groupId>org.unitils</groupId>
+            <artifactId>unitils-inject</artifactId>
+            <version>3.3</version>
+            <scope>test</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>org.unitils</groupId>
+            <artifactId>unitils-mock</artifactId>
+            <version>3.3</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
