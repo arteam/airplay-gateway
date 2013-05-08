@@ -54,11 +54,11 @@ public class Main {
 
     public void parseLibraryXml() {
         ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get("./src/main/resources/library.xml");
-        log.info(iTunesLibrary);
+        //ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get();
         for (ITunesTrack track : iTunesLibrary.getTracks().values()) {
             contentDao.addContent(new Content(track));
         }
-        log.info(contentDao.getContentList());
+        log.info("Found content: " + contentDao.getContentList());
     }
 
     public List<Device> searchDevices() {
@@ -69,16 +69,19 @@ public class Main {
                 jmdnsGateway.close();
             }
         });
-        log.info("Device dicovering...");
+        log.info("Device discovering...");
         jmdnsGateway.waitForDevices();
         List<Device> devices = deviceDao.getDevices();
-        log.info(devices);
+        if (!devices.isEmpty()) {
+            log.info("Found devices: " + devices);
+        } else {
+            log.warn("No available devices");
+        }
         return devices;
     }
 
     public void streamContent(List<Device> devices) {
         if (devices.isEmpty()) {
-            log.error("No available devices");
             return;
         }
 
@@ -120,9 +123,9 @@ public class Main {
 
         Main main = injector.getInstance(Main.class);
 
+        main.startTcpServer();
         main.parseLibraryXml();
         List<Device> devices = main.searchDevices();
         //main.streamContent(devices);
-        main.startTcpServer();
     }
 }
