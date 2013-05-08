@@ -1,5 +1,6 @@
 package ru.bcc.airstage.itunes.parser;
 
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import com.google.inject.Inject;
@@ -12,6 +13,8 @@ import java.io.File;
  */
 public class ITunesLibraryParser {
 
+    private static final Logger log = Logger.getLogger(ITunesLibraryParser.class);
+
     @Inject
     private LibraryXmlTagHandler libraryXmlTagHandler;
 
@@ -23,10 +26,14 @@ public class ITunesLibraryParser {
         if (!file.exists()) {
             throw new IllegalArgumentException("File " + itunesLibraryFilePath + " doesn't exist");
         }
+        log.info("Start parsing...");
         try {
             sp.parse(file, libraryXmlTagHandler);
+        } catch (IllegalStateException e) {
+            log.info("Done");
         } catch (Exception e) {
-            // omit exceptions
+            log.error("Error in parsing", e);
+            throw new RuntimeException(e);
         }
     }
 
