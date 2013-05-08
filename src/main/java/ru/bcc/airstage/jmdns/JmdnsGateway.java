@@ -84,8 +84,10 @@ public class JmdnsGateway {
      */
     public void close() {
         try {
+            log.info("Closing JmDNS gateway...");
             jmDNS.removeServiceListener(SERVICE_TYPE, serviceListener);
             jmDNS.close();
+            log.info("JmDNS gateway is closed");
         } catch (IOException e) {
             log.error("I/O error", e);
         }

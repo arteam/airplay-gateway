@@ -9,6 +9,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Date: 30.04.13
@@ -43,22 +44,25 @@ public class TCPServer {
             @Override
             public void run() {
                 // Handle connections
-                while (!Thread.currentThread().isInterrupted()) {
+                while (!serverSocket.isClosed() ||
+                        !Thread.currentThread().isInterrupted()) {
+                    final Socket socket;
                     try {
-                        final Socket socket = serverSocket.accept();
-                        connectionExecutor.submit(new Runnable() {
-                            @Override
-                            public void run() {
-                                connectionHandler.handle(socket);
-                            }
-
-                        });
+                        socket = serverSocket.accept();
                     } catch (IOException e) {
-                        System.err.println(e);
+                        throw new RuntimeException(e);
                     }
+                    connectionExecutor.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            connectionHandler.handle(socket);
+                        }
+                    });
                 }
             }
-        });
+        }
+
+        );
     }
 
 
@@ -66,13 +70,26 @@ public class TCPServer {
      * Stop accepting requests and close socket
      */
     public void stop() {
-        connectionExecutor.shutdown();
-        mainExecutor.shutdown();
+        log.info("Stopping TCP server...");
         try {
             serverSocket.close();
         } catch (IOException e) {
+            log.error("Unable close socket", e);
+        }
+
+        connectionExecutor.shutdownNow();
+        mainExecutor.shutdownNow();
+
+        try {
+            connectionExecutor.awaitTermination(1, TimeUnit.MINUTES);
+            mainExecutor.awaitTermination(1, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
             log.error(e);
         }
+
+        log.info("Socket closed: " + serverSocket.isClosed());
+        log.info("Connection thread pool terminated: " + connectionExecutor.isTerminated());
+        log.info("Dispatcher thread terminated: " + mainExecutor.isTerminated());
     }
 
 
