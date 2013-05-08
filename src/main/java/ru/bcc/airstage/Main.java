@@ -14,7 +14,9 @@ import ru.bcc.airstage.model.Content;
 import ru.bcc.airstage.model.Device;
 import org.apache.log4j.Logger;
 import ru.bcc.airstage.server.TCPServer;
+import ru.bcc.airstage.stream.StreamServer;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -28,32 +30,30 @@ public class Main {
 
     private static final Logger log = Logger.getLogger(Main.class);
 
+    @Inject
     private AirPlayGateway airPlayGateway;
 
+    @Inject
     private JmdnsGateway jmdnsGateway;
 
+    @Inject
     private ITunesLibraryProvider iTunesLibraryProvider;
 
+    @Inject
     private ContentDao contentDao;
 
+    @Inject
     private DeviceDao deviceDao;
 
+    @Inject
     private TCPServer tcpServer;
 
     @Inject
-    public Main(AirPlayGateway airPlayGateway, JmdnsGateway jmdnsGateway, ITunesLibraryProvider iTunesLibraryProvider,
-                ContentDao contentDao, DeviceDao deviceDao, TCPServer tcpServer) {
-        this.airPlayGateway = airPlayGateway;
-        this.jmdnsGateway = jmdnsGateway;
-        this.iTunesLibraryProvider = iTunesLibraryProvider;
-        this.contentDao = contentDao;
-        this.deviceDao = deviceDao;
-        this.tcpServer = tcpServer;
-    }
+    private StreamServer streamServer;
 
 
     public void parseLibraryXml() {
-        ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get();
+        ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get("/home/artem/Mail/iml.xml");
         //ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get();
         for (ITunesTrack track : iTunesLibrary.getTracks().values()) {
             contentDao.addContent(new Content(track));
@@ -87,8 +87,8 @@ public class Main {
 
         Device device = devices.get(0);
 
-        //String url = "ftp://assets:assets@192.168.52.112/mpeg2_mpa/SOUZMULTFILM/Bremenskie_muziikantii.mpg";
-        String url = "http://192.168.52.15:8989/SUI/perlaws/samples/sample_iTunes.mov";
+        String url = "http://192.168.52.248:8080/stream?code=425";
+        //String url = "http://192.168.52.15:8989/SUI/perlaws/samples/sample_iTunes.mov";
         airPlayGateway.sendCommand(new PlayCommand(url, 0.0), device);
 
         // Polling
@@ -114,6 +114,18 @@ public class Main {
         });
     }
 
+    public void startStreamServer() {
+        streamServer.start();
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                streamServer.stop();
+            }
+        });
+    }
+
+
     public static void main(String[] args) {
         Injector injector = Guice.createInjector(new AbstractModule() {
             @Override
@@ -124,8 +136,10 @@ public class Main {
         Main main = injector.getInstance(Main.class);
 
         main.startTcpServer();
+        main.startStreamServer();
         main.parseLibraryXml();
+
         List<Device> devices = main.searchDevices();
-        //main.streamContent(devices);
+        main.streamContent(devices);
     }
 }
