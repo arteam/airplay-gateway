@@ -20,6 +20,9 @@ import javax.xml.parsers.SAXParserFactory;
 @Singleton
 public class ITunesLibraryProvider {
 
+    @Inject
+    private ItunesLibraryFinder itunesLibraryFinder;
+
     @NotNull
     public ITunesLibrary get(@NotNull String itunesLibraryFilePath) {
         ITunesLibrary iTunesLibrary = new ITunesLibrary();
@@ -30,6 +33,15 @@ public class ITunesLibraryProvider {
 
         parser.parse(itunesLibraryFilePath);
         return iTunesLibrary;
+    }
+
+    @NotNull
+    public ITunesLibrary get() {
+        String libraryPath = itunesLibraryFinder.findLibrary();
+        if (libraryPath == null) {
+            throw new IllegalStateException("Unable find ITunes library");
+        }
+        return get(libraryPath);
     }
 
     private static class ITunesModule extends AbstractModule {
