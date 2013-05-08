@@ -2,6 +2,7 @@ package ru.bcc.airstage.itunes;
 
 import com.google.inject.*;
 import org.apache.log4j.Logger;
+import org.xml.sax.XMLReader;
 import ru.bcc.airstage.itunes.data.ITunesLibrary;
 import ru.bcc.airstage.itunes.parser.ITunesLibraryParser;
 import org.jetbrains.annotations.NotNull;
@@ -35,7 +36,6 @@ public class ITunesLibraryProvider {
         ITunesLibraryParser parser = injector.getInstance(ITunesLibraryParser.class);
 
         log.info("Path to library " + itunesLibraryFilePath);
-        log.info("Start parsing...");
         parser.parse(itunesLibraryFilePath);
         log.info(iTunesLibrary);
         return iTunesLibrary;
@@ -73,7 +73,12 @@ public class ITunesLibraryProvider {
         public SAXParser saxParser() throws ParserConfigurationException, SAXException {
             SAXParserFactory spf = SAXParserFactory.newInstance();
             spf.setValidating(false);
-            return spf.newSAXParser();
+            SAXParser saxParser = spf.newSAXParser();
+            XMLReader parser = saxParser.getXMLReader();
+
+            // Ignore the DTD declaration
+            parser.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            return saxParser;
         }
     }
 }
