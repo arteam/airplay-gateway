@@ -87,7 +87,7 @@ public class JmdnsGateway {
             jmDNS.removeServiceListener(SERVICE_TYPE, serviceListener);
             jmDNS.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("I/O error", e);
         }
     }
 

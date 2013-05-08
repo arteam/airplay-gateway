@@ -19,8 +19,12 @@ public class ITunesLibraryParser {
     private SAXParser sp;
 
     public void parse(@NotNull String itunesLibraryFilePath) {
+        File file = new File(itunesLibraryFilePath);
+        if (!file.exists()) {
+            throw new IllegalArgumentException("File " + itunesLibraryFilePath + " doesn't exist");
+        }
         try {
-            sp.parse(new File(itunesLibraryFilePath), libraryXmlTagHandler);
+            sp.parse(file, libraryXmlTagHandler);
         } catch (Exception e) {
             // omit exceptions
         }

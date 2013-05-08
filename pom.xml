@@ -6,7 +6,7 @@
 
     <groupId>airStage</groupId>
     <artifactId>airStage</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -26,95 +26,85 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                            <classpathLayoutType>simple</classpathLayoutType>
-                            <mainClass>Main</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <configuration>
-                    <outputDirectory>${project.build.directory}/lib/</outputDirectory>
-                    <includeScope>runtime</includeScope>
-                </configuration>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.7.1</version>
                 <executions>
                     <execution>
-                        <id>copy-dependencies</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>copy-dependencies</goal>
+                            <goal>shade</goal>
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-        </plugins>
-    </build>
+                <configuration>
+                    <finalName>${project.artifactId}-${project.version}</finalName>
+                    <transformers>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <mainClass>ru.bcc.airstage.Main</mainClass>
+                        </transformer>
+                    </transformers>
+            </configuration>
+        </plugin>
+    </plugins>
+</build>
 
-    <dependencies>
-        <dependency>
-            <groupId>javax.jmdns</groupId>
-            <artifactId>jmdns</artifactId>
-            <version>3.4.1</version>
-        </dependency>
+<dependencies>
+<dependency>
+    <groupId>javax.jmdns</groupId>
+    <artifactId>jmdns</artifactId>
+    <version>3.4.1</version>
+</dependency>
 
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>3.0</version>
+<dependency>
+    <groupId>com.google.inject</groupId>
+    <artifactId>guice</artifactId>
+    <version>3.0</version>
 
-        </dependency>
+</dependency>
 
-        <dependency>
-            <groupId>com.intellij</groupId>
-            <artifactId>annotations</artifactId>
-            <version>12.0</version>
-        </dependency>
+<dependency>
+    <groupId>com.intellij</groupId>
+    <artifactId>annotations</artifactId>
+    <version>12.0</version>
+</dependency>
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.4</version>
-            <scope>test</scope>
-        </dependency>
 
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.2.3</version>
-        </dependency>
+<dependency>
+    <groupId>com.google.code.gson</groupId>
+    <artifactId>gson</artifactId>
+    <version>2.2.3</version>
+</dependency>
 
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-        </dependency>
+<dependency>
+    <groupId>log4j</groupId>
+    <artifactId>log4j</artifactId>
+    <version>1.2.17</version>
+</dependency>
 
-        <!-- It's patched version of Unitils from the MW Team local repo. If the project doesn't build
-             you can change UnitilsLoggableTestRunner in tests to bundled UnitilsJUnit4TestClassRunner -->
-        <dependency>
-            <groupId>org.unitils</groupId>
-            <artifactId>unitils-inject</artifactId>
-            <version>3.3</version>
-            <scope>test</scope>
-        </dependency>
+<dependency>
+    <groupId>junit</groupId>
+    <artifactId>junit</artifactId>
+    <version>4.4</version>
+    <scope>test</scope>
+</dependency>
 
-        <dependency>
-            <groupId>org.unitils</groupId>
-            <artifactId>unitils-mock</artifactId>
-            <version>3.3</version>
-            <scope>test</scope>
-        </dependency>
+<!-- It's patched version of Unitils from the MW Team local repo. If the project doesn't build
+     you can change UnitilsLoggableTestRunner in tests to bundled UnitilsJUnit4TestClassRunner -->
+<dependency>
+    <groupId>org.unitils</groupId>
+    <artifactId>unitils-inject</artifactId>
+    <version>3.3</version>
+    <scope>test</scope>
+</dependency>
 
-    </dependencies>
+<dependency>
+    <groupId>org.unitils</groupId>
+    <artifactId>unitils-mock</artifactId>
+    <version>3.3</version>
+    <scope>test</scope>
+</dependency>
 
-</project>
+</dependencies>
+
+        </project>
