@@ -35,4 +35,12 @@ public class Response {
     public Object getValue() {
         return value;
     }
+
+    @Override
+    public String toString() {
+        return "Response{" +
+                "code=" + code +
+                ", value=" + value +
+                '}';
+    }
 }
