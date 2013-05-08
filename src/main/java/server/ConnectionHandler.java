@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import server.command.Request;
+import server.command.Response;
 
 import java.io.*;
 import java.net.Socket;
@@ -80,17 +81,17 @@ public class ConnectionHandler {
             request = jsonConverter.fromJson(jsonRequest);
         } catch (Exception e) {
             log.error("Unable parse " + jsonRequest, e);
-            return jsonConverter.toJson("Invalid request");
+            return jsonConverter.toJson(new Response(1, "Invalid request"));
         }
 
         try {
-            Object response = dispatcher.process(request);
+            Response response = dispatcher.process(request);
             String jsonResponse = jsonConverter.toJson(response);
             log.info("Response: " + jsonResponse);
             return jsonResponse;
         } catch (Exception e) {
             log.error("Internal error", e);
-            return jsonConverter.toJson("Internal error");
+            return jsonConverter.toJson(new Response(1, "Internal error"));
         }
     }
 }

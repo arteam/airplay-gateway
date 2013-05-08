@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import server.command.Action;
 import server.command.Request;
+import server.command.Response;
 
 /**
  * Date: 06.05.13
@@ -35,19 +36,19 @@ public class Dispatcher {
     /**
      * Process request
      */
-    public Object process(@NotNull Request request) {
+    public Response process(@NotNull Request request) {
         Action action = request.getAction();
         switch (action) {
             case DEVICES:
-                return deviceDao.getDevices();
+                return new Response(0, deviceDao.getDevices());
             case CONTENT:
-                return contentDao.getContentList();
+                return new Response(0, contentDao.getContentList());
             case PLAY:
                 String contentId = request.getParams().get("contentId");
                 String deviceId = request.getParams().get("deviceId");
-                return playContent(contentId, deviceId);
+                return new Response(0, playContent(contentId, deviceId));
             default:
-                return "Invalid action";
+                return new Response(1, "Invalid action");
         }
     }
 
