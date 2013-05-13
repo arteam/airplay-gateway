@@ -7,6 +7,7 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.apache.log4j.Logger;
 import ru.bcc.airstage.airplay.AirPlayGateway;
+import ru.bcc.airstage.airplay.ConnectionPool;
 import ru.bcc.airstage.airplay.command.PlayCommand;
 import ru.bcc.airstage.airplay.command.ScrubCommand;
 import ru.bcc.airstage.database.ContentDao;
@@ -21,7 +22,6 @@ import ru.bcc.airstage.server.ContentPlayer;
 import ru.bcc.airstage.server.TCPServer;
 import ru.bcc.airstage.stream.StreamServer;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,10 +57,13 @@ public class Main {
     private StreamServer streamServer;
 
     @Inject
-    private Housekeeping housekeeping;
+    private ContentPlayer contentPlayer;
 
     @Inject
-    private ContentPlayer contentPlayer;
+    private ConnectionPool connectionPool;
+
+    @Inject
+    private Housekeeping housekeeping;
 
     public void parseLibraryXml() {
         ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get("./library.xml");
@@ -103,11 +106,20 @@ public class Main {
         });
     }
 
-    public void stopPlayerAfterShutdown() {
+    private void stopPlayerAfterShutdown() {
         housekeeping.afterShutdown(new Runnable() {
             @Override
             public void run() {
                 contentPlayer.stop();
+            }
+        });
+    }
+
+    private void closeAirPlayConnectionsAfterShutdown() {
+        housekeeping.afterShutdown(new Runnable() {
+            @Override
+            public void run() {
+                connectionPool.closeAll();
             }
         });
     }
@@ -166,9 +178,10 @@ public class Main {
         main.startTcpServer();
         main.startStreamServer();
         main.parseLibraryXml();
-        main.stopPlayerAfterShutdown();
-
         main.searchDevices();
+
+        main.stopPlayerAfterShutdown();
+        main.closeAirPlayConnectionsAfterShutdown();
         //main.streamContent();
     }
 }

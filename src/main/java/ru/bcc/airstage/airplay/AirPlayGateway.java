@@ -120,7 +120,4 @@ public class AirPlayGateway {
         return content.toString();
     }
 
-    public void close() {
-        connectionPool.closeAll();
-    }
 }
