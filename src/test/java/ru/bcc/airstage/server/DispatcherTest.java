@@ -1,5 +1,6 @@
 package ru.bcc.airstage.server;
 
+import com.google.gson.internal.Streams;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +20,7 @@ import ru.bcc.airstage.model.Device;
 import ru.bcc.airstage.server.command.Action;
 import ru.bcc.airstage.server.command.Request;
 import ru.bcc.airstage.server.command.Response;
+import ru.bcc.airstage.stream.StreamServer;
 
 import java.net.Inet4Address;
 import java.util.Collections;
@@ -44,6 +46,9 @@ public class DispatcherTest {
 
     @InjectIntoByType
     Mock<AirPlayGateway> airPlayGatewayMock;
+
+    @InjectIntoByType
+    Mock<StreamServer> streamServerMock;
 
     @Test
     public void testGetDevices() throws Exception {
@@ -92,7 +97,10 @@ public class DispatcherTest {
                 "Date: Thu, 01 Jan 1970 00:10:32 GMT\n" +
                 "Content-Length: 0";
         DeviceResponse deviceResponse = new DeviceResponse(headers, null);
-        airPlayGatewayMock.returns(deviceResponse).sendCommand(new PlayCommand("url", 0.0), device);
+        airPlayGatewayMock.returns(deviceResponse).sendCommand(new PlayCommand("http://192.168.52.248:8080/stream?code=18", 0.0), device);
+
+        streamServerMock.returns("192.168.52.248").getHost();
+        streamServerMock.returns(8080).getPort();
 
         Response response = dispatcher.process(new Request(Action.PLAY, new HashMap<String, String>() {{
             put("contentId", "18");
