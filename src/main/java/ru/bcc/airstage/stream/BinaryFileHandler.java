@@ -1,6 +1,10 @@
 package ru.bcc.airstage.stream;
 
-import fi.iki.elonen.NanoHTTPD;
+
+import ru.bcc.airstage.stream.server.Method;
+import ru.bcc.airstage.stream.server.Response;
+import ru.bcc.airstage.stream.server.SessionHandler;
+import ru.bcc.airstage.stream.server.Status;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,7 +18,10 @@ import java.util.Map;
  *
  * @author Artem Prigoda
  */
-public class FileServer extends NanoHTTPD {
+public class BinaryFileHandler implements SessionHandler {
+
+    public static final String MIME_DEFAULT_BINARY = "application/octet-stream";
+    public static final String MIME_PLAINTEXT = "text/plain";
 
     /**
      * Hashtable mapping (String)FILENAME_EXTENSION -> (String)MIME_TYPE
@@ -52,29 +59,21 @@ public class FileServer extends NanoHTTPD {
     }};
 
 
-    public FileServer(int port) {
-        super(port);
-    }
-
-    public FileServer(String hostname, int port) {
-        super(hostname, port);
-    }
-
     @Override
-    public Response serve(String uri, Method method, Map<String, String> header, Map<String, String> parms, Map<String, String> files) {
+    public Response serve(String uri, Method method, Map<String, String> header, Map<String, String> params) {
         System.out.println(method + " '" + uri + "' ");
-        if (method != NanoHTTPD.Method.GET) {
-            return new NanoHTTPD.Response(NanoHTTPD.Response.Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "FORBIDDEN: Only get is supported");
+        if (method != Method.GET) {
+            return new Response(Status.FORBIDDEN, MIME_PLAINTEXT, "FORBIDDEN: Only get is supported");
         }
 
         if (uri.equals("stream")) {
-            return new NanoHTTPD.Response(NanoHTTPD.Response.Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "URI isn't valid");
+            return new Response(Status.FORBIDDEN, MIME_PLAINTEXT, "URI isn't valid");
         }
 
         for (String value : header.keySet()) {
             System.out.println("HDR: '" + value + "' = '" + header.get(value) + "'");
         }
-        String code = parms.get("code");
+        String code = params.get("code");
 
         return serveFile(code, header);
     }
@@ -82,23 +81,18 @@ public class FileServer extends NanoHTTPD {
     /**
      * Serves file from homeDir and its' subdirectories (only). Uses only URI, ignores all headers and HTTP parameters.
      */
-    public NanoHTTPD.Response serveFile(String code, Map<String, String> header) {
-        NanoHTTPD.Response res;
-
-                  /*  // Make sure we won't die of an exception later
-                    if (!homeDir.isDirectory()) {
-                        return new Response(Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, "INTERNAL ERRROR: serveFile(): given homeDir is not a directory.");
-                    }*/
+    public Response serveFile(String code, Map<String, String> header) {
+        Response res;
         String path = paths.get(code);
         if (path == null) {
             System.err.println("File by code " + code + " isn't registered");
-            return new NanoHTTPD.Response(NanoHTTPD.Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Error 404, file not found");
+            return new Response(Status.NOT_FOUND, MIME_PLAINTEXT, "Error 404, file not found");
         }
 
         File f = new File(path);
         if (!f.exists()) {
             System.err.println("File by " + code + " doesn't exist");
-            return new NanoHTTPD.Response(NanoHTTPD.Response.Status.NOT_FOUND, NanoHTTPD.MIME_PLAINTEXT, "Error 404, file not found");
+            return new Response(Status.NOT_FOUND, MIME_PLAINTEXT, "Error 404, file not found");
         }
         try {
             // Get MIME type from file name extension, if possible
@@ -107,7 +101,7 @@ public class FileServer extends NanoHTTPD {
             if (dot >= 0)
                 mime = MIME_TYPES.get(f.getCanonicalPath().substring(dot + 1).toLowerCase());
             if (mime == null)
-                mime = NanoHTTPD.MIME_DEFAULT_BINARY;
+                mime = MIME_DEFAULT_BINARY;
 
             // Calculate etag
             String etag = Integer.toHexString((f.getAbsolutePath() + f.lastModified() + "" + f.length()).hashCode());
@@ -128,13 +122,14 @@ public class FileServer extends NanoHTTPD {
                     } catch (NumberFormatException ignored) {
                     }
                 }
+
             }
 
             // Change return code and add Content-Range header when skipping is requested
             long fileLen = f.length();
             if (range != null && startFrom >= 0) {
                 if (startFrom >= fileLen) {
-                    res = new NanoHTTPD.Response(NanoHTTPD.Response.Status.RANGE_NOT_SATISFIABLE, NanoHTTPD.MIME_PLAINTEXT, "");
+                    res = new Response(Status.RANGE_NOT_SATISFIABLE, MIME_PLAINTEXT, "");
                     res.addHeader("Content-Range", "bytes 0-0/" + fileLen);
                     res.addHeader("ETag", etag);
                 } else {
@@ -153,22 +148,27 @@ public class FileServer extends NanoHTTPD {
                     };
                     fis.skip(startFrom);
 
-                    res = new NanoHTTPD.Response(NanoHTTPD.Response.Status.PARTIAL_CONTENT, mime, fis);
+                    res = new Response(Status.PARTIAL_CONTENT, mime, fis);
                     res.addHeader("Content-Length", "" + dataLen);
                     res.addHeader("Content-Range", "bytes " + startFrom + "-" + endAt + "/" + fileLen);
                     res.addHeader("ETag", etag);
                 }
             } else {
                 if (etag.equals(header.get("if-none-match")))
-                    res = new NanoHTTPD.Response(NanoHTTPD.Response.Status.NOT_MODIFIED, mime, "");
+                    res = new Response(Status.NOT_MODIFIED, mime, "");
                 else {
-                    res = new NanoHTTPD.Response(NanoHTTPD.Response.Status.OK, mime, new FileInputStream(f));
+                    res = new Response(Status.OK, mime, new FileInputStream(f));
                     res.addHeader("Content-Length", "" + fileLen);
                     res.addHeader("ETag", etag);
                 }
             }
+            // Add keep-alive header
+           /* String connection = header.get("connection");
+            if (connection != null && connection.equals("keep-alive")) {
+                res.addHeader("connection", "keep-alive");
+            }*/
         } catch (IOException ioe) {
-            return new NanoHTTPD.Response(NanoHTTPD.Response.Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "FORBIDDEN: Reading file failed.");
+            return new Response(Status.FORBIDDEN, MIME_PLAINTEXT, "FORBIDDEN: Reading file failed.");
         }
 
         res.addHeader("Accept-Ranges", "bytes"); // Announce that the file server accepts partial content requestes
