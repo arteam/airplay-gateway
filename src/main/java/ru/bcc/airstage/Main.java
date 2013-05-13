@@ -1,5 +1,6 @@
 package ru.bcc.airstage;
 
+import com.google.inject.name.Names;
 import ru.bcc.airstage.airplay.AirPlayGateway;
 import com.google.inject.*;
 import ru.bcc.airstage.airplay.command.PlayCommand;
@@ -14,6 +15,7 @@ import ru.bcc.airstage.model.Content;
 import ru.bcc.airstage.model.Device;
 import org.apache.log4j.Logger;
 import ru.bcc.airstage.server.TCPServer;
+import ru.bcc.airstage.stream.NetworkUtils;
 import ru.bcc.airstage.stream.StreamServer;
 
 import java.io.IOException;
@@ -53,7 +55,7 @@ public class Main {
 
 
     public void parseLibraryXml() {
-        ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get("/home/artem/Mail/iml.xml");
+        ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get("./library.xml");
         //ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get();
         for (ITunesTrack track : iTunesLibrary.getTracks().values()) {
             contentDao.addContent(new Content(track));
@@ -131,6 +133,7 @@ public class Main {
             @Override
             protected void configure() {
             }
+
         });
 
         Main main = injector.getInstance(Main.class);
@@ -140,6 +143,6 @@ public class Main {
         main.parseLibraryXml();
 
         List<Device> devices = main.searchDevices();
-        main.streamContent(devices);
+        //main.streamContent(devices);
     }
 }

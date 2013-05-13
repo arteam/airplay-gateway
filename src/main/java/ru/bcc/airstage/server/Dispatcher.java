@@ -1,5 +1,7 @@
 package ru.bcc.airstage.server;
 
+import com.google.gson.internal.Streams;
+import com.google.inject.name.Named;
 import ru.bcc.airstage.airplay.AirPlayGateway;
 import ru.bcc.airstage.airplay.DeviceResponse;
 import ru.bcc.airstage.airplay.command.PlayCommand;
@@ -13,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 import ru.bcc.airstage.server.command.Action;
 import ru.bcc.airstage.server.command.Request;
 import ru.bcc.airstage.server.command.Response;
+import ru.bcc.airstage.stream.StreamServer;
 
 /**
  * Date: 06.05.13
@@ -32,6 +35,9 @@ public class Dispatcher {
 
     @Inject
     private AirPlayGateway airPlayGateway;
+
+    @Inject
+    private StreamServer streamServer;
 
     /**
      * Process request
@@ -71,7 +77,9 @@ public class Dispatcher {
         if (content == null) throw new IllegalArgumentException("Content not found by id=" + contentId);
         if (device == null) throw new IllegalArgumentException("Device not found by id=" + deviceId);
 
-        DeviceResponse response = airPlayGateway.sendCommand(new PlayCommand(content.getUrl(), 0.0), device);
+        //http://192.168.52.248:8080/stream?code=425";
+        String url = streamServer.getHost() + ":" + streamServer.getPort() + "/stream?code" + contentId;
+        DeviceResponse response = airPlayGateway.sendCommand(new PlayCommand(url, 0.0), device);
         return response.getCode() + " " + response.getMessage();
     }
 }
