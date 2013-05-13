@@ -1,5 +1,8 @@
 package ru.bcc.airstage.stream.server;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.*;
@@ -15,9 +18,12 @@ class Decoder {
     /**
      * Decodes the sent headers and loads the data into Key/value pairs
      */
-    public Status decodeHeader(BufferedReader in, Map<String, String> pre,
-                                Map<String, String> parms, Map<String, String> header) {
+    @Nullable
+    public Request decodeHeader(@NotNull BufferedReader in) {
         try {
+            Map<String, String> params = new HashMap<String, String>();
+            Map<String, String> headers = new HashMap<String, String>();
+
             // Read the request line
             String inLine = in.readLine();
             if (inLine == null) {
@@ -26,13 +32,12 @@ class Decoder {
 
             StringTokenizer st = new StringTokenizer(inLine);
             if (!st.hasMoreTokens()) {
-                return Status.BAD_REQUEST;
+                throw new IllegalArgumentException();
             }
 
-            pre.put("method", st.nextToken());
-
+            Method method = Method.lookup(st.nextToken());
             if (!st.hasMoreTokens()) {
-                return Status.BAD_REQUEST;
+                throw new IllegalArgumentException();
             }
 
             String uri = st.nextToken();
@@ -40,7 +45,7 @@ class Decoder {
             // Decode parameters from the URI
             int qmi = uri.indexOf('?');
             if (qmi >= 0) {
-                decodeParams(uri.substring(qmi + 1), parms);
+                decodeParams(uri.substring(qmi + 1), params);
                 uri = decodePercent(uri.substring(0, qmi));
             } else {
                 uri = decodePercent(uri);
@@ -55,17 +60,14 @@ class Decoder {
                 while (line != null && line.trim().length() > 0) {
                     int p = line.indexOf(':');
                     if (p >= 0)
-                        header.put(line.substring(0, p).trim().toLowerCase(), line.substring(p + 1).trim());
+                        headers.put(line.substring(0, p).trim().toLowerCase(), line.substring(p + 1).trim());
                     line = in.readLine();
                 }
             }
 
-            pre.put("uri", uri);
-            return Status.OK;
-        } catch (IOException ioe) {
-            return Status.INTERNAL_ERROR;
-        } catch (IllegalArgumentException e) {
-            return Status.BAD_REQUEST;
+            return new Request(uri, method, params, headers);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

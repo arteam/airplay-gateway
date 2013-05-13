@@ -38,7 +38,7 @@ public class ResponseSender {
                 pw.print("Content-Type: " + mime + "\r\n");
             }
 
-            Map<String, String> header = response.header;
+            Map<String, String> header = response.headers;
             if (header == null || header.get("Date") == null) {
                 pw.print("Date: " + gmtFrmt.format(new Date()) + "\r\n");
             }

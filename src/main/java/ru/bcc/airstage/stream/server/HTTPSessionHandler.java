@@ -2,16 +2,18 @@ package ru.bcc.airstage.stream.server;
 
 
 import com.google.inject.Inject;
+import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Handles sessions, i.e. parses the HTTP request and returns the response.
  */
 public class HTTPSessionHandler {
+
+    private static final Logger log = Logger.getLogger(HTTPSessionHandler.class);
 
     @Inject
     private Decoder decoder;
@@ -22,54 +24,47 @@ public class HTTPSessionHandler {
     @Inject
     private SessionHandler sessionHandler;
 
-    public void handle(Socket socket) {
-        InputStream inputStream = null;
+    public void handle(@NotNull Socket socket) {
         OutputStream outputStream = null;
         try {
-
-            inputStream = socket.getInputStream();
             outputStream = socket.getOutputStream();
-
-            // Create a BufferedReader for parsing the header.
-            BufferedReader hin = new BufferedReader(new InputStreamReader(inputStream));
-            while (true) {
-                Map<String, String> pre = new HashMap<String, String>();
-                Map<String, String> params = new HashMap<String, String>();
-                Map<String, String> header = new HashMap<String, String>();
-
-                // Decode the header into params and header java properties
-                Status status = decoder.decodeHeader(hin, pre, params, header);
-                if (status == null) {
-                    return;
-                }
-
-                if (status != Status.OK) {
-                    responseSender.send(outputStream, new Response(status));
-                    return;
-                }
-
-                Method method = Method.lookup(pre.get("method"));
-                if (method == null) {
-                    responseSender.send(outputStream, new Response(status));
-                    return;
-                }
-                String uri = pre.get("uri");
-
-                // Ok, now do the serve()
-                Response r = sessionHandler.serve(uri, method, header, params);
-                if (r != null) {
-                    responseSender.send(outputStream, r);
-                } else {
-                    responseSender.send(outputStream, new Response(Status.INTERNAL_ERROR));
-                }
-            }
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            keepAlive(in, outputStream);
         } catch (Exception e) {
-            responseSender.send(outputStream, new Response(Status.INTERNAL_ERROR));
+            log.error("I/O error", e);
+            if (outputStream != null) responseSender.send(outputStream, new Response(Status.INTERNAL_ERROR));
         } finally {
             try {
                 socket.close();
-                System.out.println(socket + " closed");
+                log.info(socket + " closed");
             } catch (IOException e) {
+                log.error("Unable close socket", e);
+            }
+        }
+    }
+
+    private void keepAlive(@NotNull BufferedReader in, @NotNull OutputStream outputStream) {
+        // We accept keep-alive thus don't close connection while client doesn't break it
+        while (true) {
+            Request request;
+            try {
+                request = decoder.decodeHeader(in);
+                // Client break connection
+                if (request == null) {
+                    return;
+                }
+            } catch (IllegalArgumentException e) {
+                responseSender.send(outputStream, new Response(Status.BAD_REQUEST));
+                return;
+            } catch (Exception e) {
+                responseSender.send(outputStream, new Response(Status.INTERNAL_ERROR));
+                return;
+            }
+
+            Response r = sessionHandler.serve(request);
+            if (r != null) {
+                responseSender.send(outputStream, r);
+            } else {
                 responseSender.send(outputStream, new Response(Status.INTERNAL_ERROR));
             }
         }

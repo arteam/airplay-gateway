@@ -7,8 +7,9 @@ package ru.bcc.airstage.stream.server;
  * @author Artem Prigoda
  */
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.*;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -25,19 +26,23 @@ public class Response {
     /**
      * HTTP status code after processing, e.g. "200 OK", HTTP_OK
      */
+    @NotNull
     public Status status;
     /**
      * MIME type of content, e.g. "text/html"
      */
+    @NotNull
     public String mimeType;
     /**
      * Data of the response, may be null.
      */
+    @NotNull
     public InputStream data;
     /**
      * Headers for the HTTP response. Use addHeader() to add lines.
      */
-    public Map<String, String> header = new HashMap<String, String>();
+    @NotNull
+    public Map<String, String> headers = new HashMap<String, String>();
 
     /**
      * Default constructor: response = HTTP_OK, mime = MIME_HTML and your supplied message
@@ -47,13 +52,13 @@ public class Response {
     }
 
     public Response(Status status) {
-      this(status, MIME_HTML, status.getDescription());
+        this(status, MIME_HTML, status.getDescription());
     }
 
     /**
      * Basic constructor.
      */
-    public Response(Status status, String mimeType, InputStream data) {
+    public Response(@NotNull Status status, @NotNull String mimeType, @NotNull InputStream data) {
         this.status = status;
         this.mimeType = mimeType;
         this.data = data;
@@ -62,7 +67,7 @@ public class Response {
     /**
      * Convenience method that makes an InputStream out of given text.
      */
-    public Response(Status status, String mimeType, String txt) {
+    public Response(@NotNull Status status, @NotNull String mimeType, @NotNull String txt) {
         this.status = status;
         this.mimeType = mimeType;
         try {
@@ -76,7 +81,7 @@ public class Response {
      * Adds given line to the header.
      */
     public void addHeader(String name, String value) {
-        header.put(name, value);
+        headers.put(name, value);
     }
 
     @Override
@@ -84,7 +89,7 @@ public class Response {
         return "Response{" +
                 "status=" + status +
                 ", mimeType='" + mimeType + '\'' +
-                ", header=" + header +
+                ", header=" + headers +
                 '}';
     }
 }

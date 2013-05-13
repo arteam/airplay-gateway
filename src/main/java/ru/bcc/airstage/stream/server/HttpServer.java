@@ -1,17 +1,28 @@
 package ru.bcc.airstage.stream.server;
 
 import com.google.inject.Inject;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.net.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * Basic HTTP server
+ */
 public class HttpServer {
 
+    @NotNull
     private ServerSocket myServerSocket;
+
+    @NotNull
     private final ExecutorService mainExecutor = Executors.newSingleThreadExecutor();
+
+    @NotNull
     private final ExecutorService workExecutor = Executors.newCachedThreadPool();
+
+    @NotNull
     private final HTTPSessionHandler httpSessionHandler;
 
     @Inject
@@ -19,11 +30,11 @@ public class HttpServer {
         this.httpSessionHandler = httpSessionHandler;
     }
 
-    public SocketAddress getAddress(){
+    public SocketAddress getAddress() {
         return myServerSocket.getLocalSocketAddress();
     }
 
-    public void start(int port){
+    public void start(int port) {
         start("localhost", port);
     }
 
