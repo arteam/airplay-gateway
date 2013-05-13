@@ -78,7 +78,7 @@ public class Dispatcher {
         if (device == null) throw new IllegalArgumentException("Device not found by id=" + deviceId);
 
         //http://192.168.52.248:8080/stream?code=425";
-        String url = streamServer.getHost() + ":" + streamServer.getPort() + "/stream?code" + contentId;
+        String url = "http://" + streamServer.getHost() + ":" + streamServer.getPort() + "/stream?code=" + contentId;
         DeviceResponse response = airPlayGateway.sendCommand(new PlayCommand(url, 0.0), device);
         return response.getCode() + " " + response.getMessage();
     }

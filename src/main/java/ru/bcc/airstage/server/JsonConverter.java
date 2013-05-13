@@ -1,6 +1,8 @@
 package ru.bcc.airstage.server;
 
 import com.google.gson.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ru.bcc.airstage.model.Content;
 import ru.bcc.airstage.model.Device;
 import ru.bcc.airstage.server.command.Action;
@@ -74,11 +76,16 @@ public class JsonConverter {
                 .create();
     }
 
-    public String toJson(Object content) {
+    @NotNull
+    public String toJson(@Nullable Object content) {
         return gson.toJson(content);
     }
 
-    public Request fromJson(String json) {
+    @NotNull
+    public Request fromJson(@Nullable String json) {
+        if (json == null || json.isEmpty()) {
+            throw new IllegalArgumentException("Empty json");
+        }
         return gson.fromJson(json, Request.class);
     }
 }
