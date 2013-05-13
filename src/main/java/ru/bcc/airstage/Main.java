@@ -7,6 +7,8 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.apache.log4j.Logger;
 import ru.bcc.airstage.airplay.AirPlayGateway;
+import ru.bcc.airstage.airplay.command.PlayCommand;
+import ru.bcc.airstage.airplay.command.ScrubCommand;
 import ru.bcc.airstage.database.ContentDao;
 import ru.bcc.airstage.database.DeviceDao;
 import ru.bcc.airstage.itunes.ITunesLibraryProvider;
@@ -15,6 +17,7 @@ import ru.bcc.airstage.itunes.data.ITunesTrack;
 import ru.bcc.airstage.jmdns.JmdnsGateway;
 import ru.bcc.airstage.model.Content;
 import ru.bcc.airstage.model.Device;
+import ru.bcc.airstage.server.ContentPlayer;
 import ru.bcc.airstage.server.TCPServer;
 import ru.bcc.airstage.stream.StreamServer;
 
@@ -52,9 +55,14 @@ public class Main {
     @Inject
     private StreamServer streamServer;
 
+    @Inject
+    private Housekeeping housekeeping;
+
+    @Inject
+    private ContentPlayer contentPlayer;
 
     public void parseLibraryXml() {
-        ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get();
+        ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get("./library.xml");
         //ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get();
         for (ITunesTrack track : iTunesLibrary.getTracks().values()) {
             contentDao.addContent(new Content(track));
@@ -64,7 +72,7 @@ public class Main {
 
     public List<Device> searchDevices() {
         jmdnsGateway.start();
-        Runtime.getRuntime().addShutdownHook(new Thread() {
+        housekeeping.afterShutdown(new Runnable() {
             @Override
             public void run() {
                 jmdnsGateway.close();
@@ -83,7 +91,7 @@ public class Main {
 
     public void startTcpServer() {
         tcpServer.start();
-        Runtime.getRuntime().addShutdownHook(new Thread() {
+        housekeeping.afterShutdown(new Runnable() {
             @Override
             public void run() {
                 tcpServer.stop();
@@ -94,12 +102,45 @@ public class Main {
     public void startStreamServer() {
         streamServer.start();
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
+        housekeeping.afterShutdown(new Runnable() {
             @Override
             public void run() {
                 streamServer.stop();
             }
         });
+    }
+
+    public void stopPlayerAfterShutdown() {
+        housekeeping.afterShutdown(new Runnable() {
+            @Override
+            public void run() {
+                contentPlayer.stop();
+            }
+        });
+    }
+
+    public void streamContent(List<Device> devices) {
+        if (devices.isEmpty()) {
+            return;
+        }
+
+        Device device = devices.get(0);
+
+        //String url = "ftp://assets:assets@192.168.52.112/mpeg2_mpa/SOUZMULTFILM/Bremenskie_muziikantii.mpg";
+        //String url = "http://192.168.52.15:8989/SUI/perlaws/samples/sample_iTunes.mov";
+        String url = "http://192.168.52.248:8080/stream?code=5456";
+        airPlayGateway.sendCommand(new PlayCommand(url, 0.0), device);
+
+        // Polling
+        while (!Thread.currentThread().isInterrupted()) {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                continue;
+            }
+            airPlayGateway.sendCommand(new ScrubCommand(), device);
+        }
     }
 
 
@@ -126,7 +167,10 @@ public class Main {
         main.startTcpServer();
         main.startStreamServer();
         main.parseLibraryXml();
-        main.searchDevices();
-        //main.streamContent(devices);
+        main.stopPlayerAfterShutdown();
+
+        List<Device> devices = main.searchDevices();
+        main.streamContent(devices);
+
     }
 }

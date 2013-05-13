@@ -23,6 +23,7 @@ import java.util.TimeZone;
 class ResponseSender {
 
     private static final Logger log = Logger.getLogger(ResponseSender.class);
+    private static final int BUFFER_SIZE = 16 * 1024;
 
     /**
      * Sends given response to the socket.
@@ -56,12 +57,23 @@ class ResponseSender {
             InputStream data = response.data;
 
             // This is to support partial sends
-            int pending = data.available();
-            byte[] buff = new byte[pending];
-            int read = data.read(buff);
-            log.info("Read " + read + " Available: " + pending);
+            // We use buffer because a file could has big size and not fit in memory
+            int amount = data.available();
+            int pending = amount;
+            int step = 0;
+            byte[] buff = new byte[BUFFER_SIZE];
+            while (pending > 0) {
+                int read = data.read(buff, 0, ((pending > BUFFER_SIZE) ? BUFFER_SIZE : pending));
+                // All data is read
+                if (read <= 0) {
+                    break;
+                }
+                outputStream.write(buff, 0, read);
+                pending -= read;
+                step++;
+            }
 
-            outputStream.write(buff);
+            log.info("Read " + amount + "in " + step + " steps");
             outputStream.flush();
 
             data.close();

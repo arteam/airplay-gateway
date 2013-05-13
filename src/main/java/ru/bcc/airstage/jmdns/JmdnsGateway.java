@@ -13,6 +13,8 @@ import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Date: 29.04.13
@@ -32,6 +34,8 @@ public class JmdnsGateway {
 
     @Inject
     private DeviceDao deviceDao;
+
+    private CountDownLatch latch = new CountDownLatch(1);
 
     /**
      * Listener of event from devices
@@ -64,6 +68,7 @@ public class JmdnsGateway {
             Device device = new Device(serviceInfo.getName(), serviceInfo.getInetAddress(), serviceInfo.getPort());
             deviceDao.add(device);
             log.info("New " + device);
+            latch.countDown();
         }
     };
 
@@ -95,8 +100,12 @@ public class JmdnsGateway {
 
 
     public void waitForDevices() {
-        ServiceInfo[] list = jmDNS.list(SERVICE_TYPE);
-        log.info("Service info: " + Arrays.asList(list));
+        try {
+            latch.await(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+        }
+        //ServiceInfo[] list = jmDNS.list(SERVICE_TYPE);
+        //log.info("Service info: " + Arrays.asList(list));
     }
 
 }

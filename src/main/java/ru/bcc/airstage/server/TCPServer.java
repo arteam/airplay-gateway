@@ -84,16 +84,9 @@ public class TCPServer {
         connectionExecutor.shutdownNow();
         mainExecutor.shutdownNow();
 
-        try {
-            connectionExecutor.awaitTermination(1, TimeUnit.MINUTES);
-            mainExecutor.awaitTermination(1, TimeUnit.MINUTES);
-        } catch (InterruptedException e) {
-            log.error(e);
-        }
-
         log.info("Socket closed: " + serverSocket.isClosed());
-        log.info("Connection thread pool terminated: " + connectionExecutor.isTerminated());
-        log.info("Dispatcher thread terminated: " + mainExecutor.isTerminated());
+        //log.info("Connection thread pool terminated: " + connectionExecutor.isTerminated());
+        //log.info("Dispatcher thread terminated: " + mainExecutor.isTerminated());
     }
 
 
