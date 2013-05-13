@@ -2,6 +2,7 @@ package ru.bcc.airstage.server;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -21,7 +22,10 @@ import java.util.concurrent.TimeUnit;
 @Singleton
 public class TCPServer {
 
-    private final int port = 9099;
+    @Inject
+    @Named("clientPort")
+    private int port;
+
     private final ExecutorService connectionExecutor = Executors.newCachedThreadPool();
     private final ExecutorService mainExecutor = Executors.newSingleThreadExecutor();
     private ServerSocket serverSocket;
