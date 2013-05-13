@@ -1,6 +1,7 @@
 package ru.bcc.airstage.stream;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.apache.log4j.Logger;
 import ru.bcc.airstage.stream.server.HttpServer;
 
@@ -11,6 +12,7 @@ import ru.bcc.airstage.stream.server.HttpServer;
  *
  * @author Artem Prigoda
  */
+@Singleton
 public class StreamServer {
 
     private String host = NetworkUtils.ipAddress();
@@ -25,5 +27,13 @@ public class StreamServer {
 
     public void stop() {
         httpServer.stop();
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public int getPort() {
+        return port;
     }
 }

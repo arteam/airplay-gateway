@@ -1,8 +1,11 @@
 package ru.bcc.airstage.stream.server;
 
 
+import com.google.inject.Inject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.bcc.airstage.database.ContentDao;
+import ru.bcc.airstage.model.Content;
 import ru.bcc.airstage.stream.server.*;
 
 import java.io.File;
@@ -25,10 +28,8 @@ public class BinaryFileHandler implements SessionHandler {
     public static final String MIME_DEFAULT_BINARY = "application/octet-stream";
     public static final String MIME_PLAINTEXT = "text/plain";
 
-
-    private Map<String, String> paths = new HashMap<String, String>() {{
-        put("425", "/home/artem/Загрузки/MakeUp.mov");
-    }};
+    @Inject
+    private ContentDao contentDao;
 
     @Override
     @Nullable
@@ -62,15 +63,16 @@ public class BinaryFileHandler implements SessionHandler {
      */
     @NotNull
     private Response serveFile(@NotNull String code, @NotNull Map<String, String> headers) {
-        String path = paths.get(code);
-        if (path == null) {
+        Content content = contentDao.getById(code);
+        if (content == null) {
             System.err.println("File by code " + code + " isn't registered");
             return new Response(Status.NOT_FOUND, MIME_PLAINTEXT, "Error 404, file not found");
         }
 
+        String path = content.getUrl().replace("file://localhost", "");
         File f = new File(path);
         if (!f.exists()) {
-            System.err.println("File by " + code + " doesn't exist");
+            System.err.println("File by " + path + " doesn't exist");
             return new Response(Status.NOT_FOUND, MIME_PLAINTEXT, "Error 404, file not found");
         }
 
