@@ -10,6 +10,7 @@ import java.util.*;
 /**
  * Date: 5/12/13
  * Time: 1:23 AM
+ * Decoder of HTTP request to {@link Request}
  *
  * @author Artem Prigoda
  */

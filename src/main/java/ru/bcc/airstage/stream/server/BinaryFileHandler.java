@@ -1,4 +1,4 @@
-package ru.bcc.airstage.stream;
+package ru.bcc.airstage.stream.server;
 
 
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +14,10 @@ import java.util.Map;
 /**
  * Date: 08.05.13
  * Time: 18:58
+ * <p/>
+ * Support streaming of binary files
  *
+ * @author Paul S. Hawke
  * @author Artem Prigoda
  */
 public class BinaryFileHandler implements SessionHandler {
@@ -22,41 +25,10 @@ public class BinaryFileHandler implements SessionHandler {
     public static final String MIME_DEFAULT_BINARY = "application/octet-stream";
     public static final String MIME_PLAINTEXT = "text/plain";
 
-    /**
-     * Hashtable mapping (String)FILENAME_EXTENSION -> (String)MIME_TYPE
-     */
-    private static final Map<String, String> MIME_TYPES = new HashMap<String, String>() {{
-        put("css", "text/css");
-        put("htm", "text/html");
-        put("html", "text/html");
-        put("xml", "text/xml");
-        put("txt", "text/plain");
-        put("asc", "text/plain");
-        put("gif", "image/gif");
-        put("jpg", "image/jpeg");
-        put("jpeg", "image/jpeg");
-        put("png", "image/png");
-        put("mp3", "audio/mpeg");
-        put("m3u", "audio/mpeg-url");
-        put("mp4", "video/mp4");
-        put("ogv", "video/ogg");
-        put("flv", "video/x-flv");
-        put("mov", "video/quicktime");
-        put("swf", "application/x-shockwave-flash");
-        put("js", "application/javascript");
-        put("pdf", "application/pdf");
-        put("doc", "application/msword");
-        put("ogg", "application/x-ogg");
-        put("zip", "application/octet-stream");
-        put("exe", "application/octet-stream");
-        put("class", "application/octet-stream");
-    }};
-
 
     private Map<String, String> paths = new HashMap<String, String>() {{
         put("425", "/home/artem/Загрузки/MakeUp.mov");
     }};
-
 
     @Override
     @Nullable
@@ -86,7 +58,7 @@ public class BinaryFileHandler implements SessionHandler {
     }
 
     /**
-     * Serves file from homeDir and its' subdirectories (only). Uses only URI, ignores all headers and HTTP parameters.
+     * Serves files by code
      */
     @NotNull
     private Response serveFile(@NotNull String code, @NotNull Map<String, String> headers) {
@@ -107,8 +79,10 @@ public class BinaryFileHandler implements SessionHandler {
             // Get MIME type from file name extension, if possible
             String mime = null;
             int dot = f.getCanonicalPath().lastIndexOf('.');
-            if (dot >= 0)
-                mime = MIME_TYPES.get(f.getCanonicalPath().substring(dot + 1).toLowerCase());
+            if (dot >= 0) {
+                String extension = f.getCanonicalPath().substring(dot + 1).toLowerCase();
+                mime = MimeTypes.get(extension);
+            }
             if (mime == null)
                 mime = MIME_DEFAULT_BINARY;
 
@@ -176,4 +150,6 @@ public class BinaryFileHandler implements SessionHandler {
         res.addHeader("Accept-Ranges", "bytes"); // Announce that the file server accepts partial content requestes
         return res;
     }
+
+
 }

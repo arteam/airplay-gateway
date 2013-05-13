@@ -8,6 +8,7 @@ package ru.bcc.airstage.stream.server;
  */
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.util.*;
@@ -15,7 +16,7 @@ import java.util.*;
 /**
  * HTTP response. Return one of these from serve().
  */
-public class Response {
+class Response {
 
     /**
      * Common mime types for dynamic content
@@ -73,7 +74,6 @@ public class Response {
         try {
             data = new ByteArrayInputStream(txt.getBytes("UTF-8"));
         } catch (java.io.UnsupportedEncodingException uee) {
-            uee.printStackTrace();
         }
     }
 

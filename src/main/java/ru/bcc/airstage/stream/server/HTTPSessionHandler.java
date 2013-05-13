@@ -10,6 +10,8 @@ import java.net.Socket;
 
 /**
  * Handles sessions, i.e. parses the HTTP request and returns the response.
+ *
+ * @author Artem Prigoda
  */
 public class HTTPSessionHandler {
 
