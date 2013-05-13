@@ -63,7 +63,7 @@ public class Main {
     private ContentPlayer contentPlayer;
 
     public void parseLibraryXml() {
-        ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get("./library.xml");
+        ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get();
         //ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get();
         for (ITunesTrack track : iTunesLibrary.getTracks().values()) {
             contentDao.addContent(new Content(track));

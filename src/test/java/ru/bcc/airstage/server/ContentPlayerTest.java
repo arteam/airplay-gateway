@@ -35,7 +35,7 @@ import java.util.HashMap;
 public class ContentPlayerTest {
 
     @TestedObject
-    Dispatcher dispatcher;
+    ContentPlayer contentPlayer;
 
     @InjectIntoByType
     Mock<DeviceDao> deviceDaoMock;
@@ -49,29 +49,10 @@ public class ContentPlayerTest {
     @InjectIntoByType
     Mock<StreamServer> streamServerMock;
 
-    @Test
-    public void testGetDevices() throws Exception {
-        dispatcher.process(new Request(Action.DEVICES, Collections.EMPTY_MAP));
-        deviceDaoMock.assertInvoked().getDevices();
-    }
-
-    @Test
-    public void testGetContent() throws Exception {
-        dispatcher.process(new Request(Action.CONTENT, Collections.EMPTY_MAP));
-        contentDaoMock.assertInvoked().getContentList();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetPlayWithoutParams() throws Exception {
-        dispatcher.process(new Request(Action.PLAY, Collections.EMPTY_MAP));
-    }
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetPlayButContentNotExist() throws Exception {
-        dispatcher.process(new Request(Action.PLAY, new HashMap<String, String>() {{
-            put("contentId", "18");
-            put("deviceId", "25");
-        }}));
+        contentPlayer.playContent("18", "25");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -79,10 +60,7 @@ public class ContentPlayerTest {
         contentDaoMock.returns(new Content("18", "Walk from Colorado", "Set Jones",
                 ContentFormat.MPEG_4, "url", false, ContentSource.ITUNES)).getById("18");
 
-        dispatcher.process(new Request(Action.PLAY, new HashMap<String, String>() {{
-            put("contentId", "18");
-            put("deviceId", "25");
-        }}));
+        contentPlayer.playContent("18", "25");
     }
 
     @Test
@@ -101,13 +79,9 @@ public class ContentPlayerTest {
         streamServerMock.returns("192.168.52.248").getHost();
         streamServerMock.returns(8080).getPort();
 
-        Response response = dispatcher.process(new Request(Action.PLAY, new HashMap<String, String>() {{
-            put("contentId", "18");
-            put("deviceId", "25");
-        }}));
-        System.out.println(response);
-        Assert.assertEquals(response.getCode(), 0);
-        Assert.assertEquals(response.getValue(), "200 OK");
+        String result = contentPlayer.playContent("18", "25");
+        System.out.println(result);
+        Assert.assertEquals(result, "200 OK");
     }
 
 

@@ -54,6 +54,9 @@ public class Dispatcher {
             case PLAY:
                 String contentId = request.getParams().get("contentId");
                 String deviceId = request.getParams().get("deviceId");
+                if (contentId == null || deviceId == null) {
+                    throw new IllegalArgumentException("Content id and device id should be specified");
+                }
                 return new Response(0, contentPlayer.playContent(contentId, deviceId));
             default:
                 return new Response(1, "Invalid action");

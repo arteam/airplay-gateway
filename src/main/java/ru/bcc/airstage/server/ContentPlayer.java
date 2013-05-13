@@ -50,11 +50,7 @@ public class ContentPlayer {
      * @return response from the AirPlay gateway
      */
     @NotNull
-    public String playContent(@Nullable String contentId, @Nullable String deviceId) {
-        if (contentId == null || deviceId == null) {
-            throw new IllegalArgumentException("Content id and device id should be specified");
-        }
-
+    public String playContent(@NotNull String contentId, @NotNull String deviceId) {
         Content content = contentDao.getById(contentId);
         final Device device = deviceDao.getById(deviceId);
 

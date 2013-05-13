@@ -44,12 +44,6 @@ public class DispatcherTest {
     @InjectIntoByType
     Mock<ContentDao> contentDaoMock;
 
-    @InjectIntoByType
-    Mock<AirPlayGateway> airPlayGatewayMock;
-
-    @InjectIntoByType
-    Mock<StreamServer> streamServerMock;
-
     @Test
     public void testGetDevices() throws Exception {
         dispatcher.process(new Request(Action.DEVICES, Collections.EMPTY_MAP));
@@ -65,50 +59,6 @@ public class DispatcherTest {
     @Test(expected = IllegalArgumentException.class)
     public void testGetPlayWithoutParams() throws Exception {
         dispatcher.process(new Request(Action.PLAY, Collections.EMPTY_MAP));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetPlayButContentNotExist() throws Exception {
-        dispatcher.process(new Request(Action.PLAY, new HashMap<String, String>() {{
-            put("contentId", "18");
-            put("deviceId", "25");
-        }}));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetPlayButDeviceNotExist() throws Exception {
-        contentDaoMock.returns(new Content("18", "Walk from Colorado", "Set Jones",
-                ContentFormat.MPEG_4, "url", false, ContentSource.ITUNES)).getById("18");
-
-        dispatcher.process(new Request(Action.PLAY, new HashMap<String, String>() {{
-            put("contentId", "18");
-            put("deviceId", "25");
-        }}));
-    }
-
-    @Test
-    public void testGetPlay() throws Exception {
-        contentDaoMock.returns(new Content("18", "Walk from Colorado", "Set Jones",
-                ContentFormat.MPEG_4, "url", false, ContentSource.ITUNES)).getById("18");
-        Device device = new Device("25", "Home AppleTV", Inet4Address.getByName("192.168.52.11"), 7000);
-        deviceDaoMock.returns(device).getById("25");
-
-        String headers = "HTTP/1.1 200 OK\n" +
-                "Date: Thu, 01 Jan 1970 00:10:32 GMT\n" +
-                "Content-Length: 0";
-        DeviceResponse deviceResponse = new DeviceResponse(headers, null);
-        airPlayGatewayMock.returns(deviceResponse).sendCommand(new PlayCommand("http://192.168.52.248:8080/stream?code=18", 0.0), device);
-
-        streamServerMock.returns("192.168.52.248").getHost();
-        streamServerMock.returns(8080).getPort();
-
-        Response response = dispatcher.process(new Request(Action.PLAY, new HashMap<String, String>() {{
-            put("contentId", "18");
-            put("deviceId", "25");
-        }}));
-        System.out.println(response);
-        Assert.assertEquals(response.getCode(), 0);
-        Assert.assertEquals(response.getValue(), "200 OK");
     }
 
 
