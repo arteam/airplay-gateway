@@ -69,8 +69,8 @@
 			<key>Video Width</key><integer>1280</integer>
 			<key>Video Height</key><integer>720</integer>
 			<key>Movie</key><true/>
-            <key>Location</key><string>file://localhost/home/artem/Загрузки/MakeUp.mov</string>
-            <key>File Folder Count</key><integer>4</integer>
+			<key>Location</key><string>file://localhost/Users/user/Music/iTunes/iTunes%20Media/iTunes%20U/Developing%20Apps%20for%20iOS%20(HD)/13.%20Blocks%20and%20Multithreading%20(November%202,%202010)%20-%20HD.m4v</string>
+			<key>File Folder Count</key><integer>4</integer>
 			<key>Library Folder Count</key><integer>1</integer>
 		</dict>
 	</dict>
