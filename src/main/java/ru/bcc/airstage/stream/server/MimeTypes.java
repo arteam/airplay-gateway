@@ -32,6 +32,7 @@ class MimeTypes {
         put("mp3", "audio/mpeg");
         put("m3u", "audio/mpeg-url");
         put("mp4", "video/mp4");
+        put("m4v", "video/x-m4v");
         put("ogv", "video/ogg");
         put("flv", "video/x-flv");
         put("mov", "video/quicktime");
