@@ -1,10 +1,9 @@
 package ru.bcc.airstage.stream;
 
 
-import ru.bcc.airstage.stream.server.Method;
-import ru.bcc.airstage.stream.server.Response;
-import ru.bcc.airstage.stream.server.SessionHandler;
-import ru.bcc.airstage.stream.server.Status;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import ru.bcc.airstage.stream.server.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,34 +54,42 @@ public class BinaryFileHandler implements SessionHandler {
 
 
     private Map<String, String> paths = new HashMap<String, String>() {{
-        put("425", "/home/artem/Загрузки/sample_iTunes.mov");
+        put("425", "/home/artem/Загрузки/MakeUp.mov");
     }};
 
 
     @Override
-    public Response serve(String uri, Method method, Map<String, String> header, Map<String, String> params) {
+    @Nullable
+    public Response serve(@NotNull Request request) {
+        Method method = request.getMethod();
+        String uri = request.getUri();
+
         System.out.println(method + " '" + uri + "' ");
         if (method != Method.GET) {
-            return new Response(Status.FORBIDDEN, MIME_PLAINTEXT, "FORBIDDEN: Only get is supported");
+            return new Response(Status.FORBIDDEN, MIME_PLAINTEXT, "FORBIDDEN: Only GET is supported");
         }
 
         if (uri.equals("stream")) {
             return new Response(Status.FORBIDDEN, MIME_PLAINTEXT, "URI isn't valid");
         }
 
-        for (String value : header.keySet()) {
-            System.out.println("HDR: '" + value + "' = '" + header.get(value) + "'");
+        Map<String, String> headers = request.getHeaders();
+        for (String value : headers.keySet()) {
+            System.out.println("HDR: '" + value + "' = '" + headers.get(value) + "'");
         }
-        String code = params.get("code");
 
-        return serveFile(code, header);
+        String code = request.getParams().get("code");
+        if (code == null) {
+            return new Response(Status.BAD_REQUEST);
+        }
+        return serveFile(code, headers);
     }
 
     /**
      * Serves file from homeDir and its' subdirectories (only). Uses only URI, ignores all headers and HTTP parameters.
      */
-    public Response serveFile(String code, Map<String, String> header) {
-        Response res;
+    @NotNull
+    private Response serveFile(@NotNull String code, @NotNull Map<String, String> headers) {
         String path = paths.get(code);
         if (path == null) {
             System.err.println("File by code " + code + " isn't registered");
@@ -94,6 +101,8 @@ public class BinaryFileHandler implements SessionHandler {
             System.err.println("File by " + code + " doesn't exist");
             return new Response(Status.NOT_FOUND, MIME_PLAINTEXT, "Error 404, file not found");
         }
+
+        Response res;
         try {
             // Get MIME type from file name extension, if possible
             String mime = null;
@@ -109,7 +118,7 @@ public class BinaryFileHandler implements SessionHandler {
             // Support (simple) skipping:
             long startFrom = 0;
             long endAt = -1;
-            String range = header.get("range");
+            String range = headers.get("range");
             if (range != null) {
                 if (range.startsWith("bytes=")) {
                     range = range.substring("bytes=".length());
@@ -133,11 +142,9 @@ public class BinaryFileHandler implements SessionHandler {
                     res.addHeader("Content-Range", "bytes 0-0/" + fileLen);
                     res.addHeader("ETag", etag);
                 } else {
-                    if (endAt < 0)
-                        endAt = fileLen - 1;
+                    if (endAt < 0) endAt = fileLen - 1;
                     long newLen = endAt - startFrom + 1;
-                    if (newLen < 0)
-                        newLen = 0;
+                    if (newLen < 0) newLen = 0;
 
                     final long dataLen = newLen;
                     FileInputStream fis = new FileInputStream(f) {
@@ -154,7 +161,7 @@ public class BinaryFileHandler implements SessionHandler {
                     res.addHeader("ETag", etag);
                 }
             } else {
-                if (etag.equals(header.get("if-none-match")))
+                if (etag.equals(headers.get("if-none-match")))
                     res = new Response(Status.NOT_MODIFIED, mime, "");
                 else {
                     res = new Response(Status.OK, mime, new FileInputStream(f));
@@ -162,12 +169,7 @@ public class BinaryFileHandler implements SessionHandler {
                     res.addHeader("ETag", etag);
                 }
             }
-            // Add keep-alive header
-           /* String connection = header.get("connection");
-            if (connection != null && connection.equals("keep-alive")) {
-                res.addHeader("connection", "keep-alive");
-            }*/
-        } catch (IOException ioe) {
+        } catch (Exception ioe) {
             return new Response(Status.FORBIDDEN, MIME_PLAINTEXT, "FORBIDDEN: Reading file failed.");
         }
 
