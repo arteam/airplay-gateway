@@ -11,7 +11,7 @@ import java.util.Map;
  *
  * @author Artem Prigoda
  */
-public class Request {
+class Request {
 
     @NotNull
     private final String uri;

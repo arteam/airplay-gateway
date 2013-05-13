@@ -1,5 +1,8 @@
 package ru.bcc.airstage.stream.server;
 
+import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,59 +16,57 @@ import java.util.TimeZone;
 /**
  * Date: 5/12/13
  * Time: 1:38 AM
+ * A Sender of responses to Apple TV
  *
  * @author Artem Prigoda
  */
-public class ResponseSender {
+class ResponseSender {
 
-    private static final int BUFFER_SIZE = 16 * 1024;
+    private static final Logger log = Logger.getLogger(ResponseSender.class);
 
     /**
      * Sends given response to the socket.
      */
-    void send(OutputStream outputStream, Response response) {
+    void send(@NotNull OutputStream outputStream, @NotNull Response response) {
         String mime = response.mimeType;
-        SimpleDateFormat gmtFrmt = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
-        gmtFrmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+        // SDF is not thread-safe
+        SimpleDateFormat gmtFmt = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
+        gmtFmt.setTimeZone(TimeZone.getTimeZone("GMT"));
 
         try {
             Status status = response.status;
 
             PrintWriter pw = new PrintWriter(outputStream);
             pw.print("HTTP/1.1 " + status.getDescription() + " \r\n");
+            pw.print("Content-Type: " + mime + "\r\n");
 
-            if (mime != null) {
-                pw.print("Content-Type: " + mime + "\r\n");
+            Map<String, String> headers = response.headers;
+            if (headers.get("Date") == null) {
+                pw.print("Date: " + gmtFmt.format(new Date()) + "\r\n");
             }
 
-            Map<String, String> header = response.headers;
-            if (header == null || header.get("Date") == null) {
-                pw.print("Date: " + gmtFrmt.format(new Date()) + "\r\n");
-            }
-
-            if (header != null) {
-                for (String key : header.keySet()) {
-                    String value = header.get(key);
-                    pw.print(key + ": " + value + "\r\n");
-                }
+            for (String key : headers.keySet()) {
+                String value = headers.get(key);
+                pw.print(key + ": " + value + "\r\n");
             }
 
             pw.print("\r\n");
             pw.flush();
 
             InputStream data = response.data;
-            if (data != null) {
-                // This is to support partial sends
-                int pending = data.available();
-                byte[] buff = new byte[pending];
-                int read = data.read(buff);
-                System.out.println("Read " + read + " Available: " + pending);
-                outputStream.write(buff);
-            }
+
+            // This is to support partial sends
+            int pending = data.available();
+            byte[] buff = new byte[pending];
+            int read = data.read(buff);
+            log.info("Read " + read + " Available: " + pending);
+
+            outputStream.write(buff);
             outputStream.flush();
-            if (data != null) data.close();
+
+            data.close();
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            log.warn("I/O error: " + ioe.getMessage());
         }
     }
 }

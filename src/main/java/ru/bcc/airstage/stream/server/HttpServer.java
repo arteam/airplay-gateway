@@ -1,6 +1,7 @@
 package ru.bcc.airstage.stream.server;
 
 import com.google.inject.Inject;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -10,8 +11,12 @@ import java.util.concurrent.Executors;
 
 /**
  * Basic HTTP server
+ *
+ * @author Artem Prigoda
  */
 public class HttpServer {
+
+    private static final Logger log = Logger.getLogger(HttpServer.class);
 
     @NotNull
     private ServerSocket myServerSocket;
@@ -30,9 +35,6 @@ public class HttpServer {
         this.httpSessionHandler = httpSessionHandler;
     }
 
-    public SocketAddress getAddress() {
-        return myServerSocket.getLocalSocketAddress();
-    }
 
     public void start(int port) {
         start("localhost", port);
@@ -43,13 +45,14 @@ public class HttpServer {
      * <p/>
      * Throws an IOException if the socket is already in use
      */
-    public void start(String hostname, int port) {
+    public void start(@NotNull String hostname, int port) {
         try {
             myServerSocket = new ServerSocket();
             myServerSocket.bind(new InetSocketAddress(hostname, port));
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
+        log.info("Started HTTP stream server at " + myServerSocket);
 
         mainExecutor.execute(new Runnable() {
             @Override
@@ -77,11 +80,15 @@ public class HttpServer {
     public void stop() {
         try {
             myServerSocket.close();
+            log.info(myServerSocket + " closed");
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            log.error("I/O error", ioe);
         }
         workExecutor.shutdown();
         mainExecutor.shutdown();
+        log.info("Socket closed: " + myServerSocket.isClosed());
+        log.info("Work thread pool terminated: " + workExecutor.isTerminated());
+        log.info("Dispatcher thread pool terminated: " + mainExecutor.isTerminated());
     }
 
 }

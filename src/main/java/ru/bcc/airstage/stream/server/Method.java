@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author Artem Prigoda
  */
-public enum Method {
+enum Method {
     GET, PUT, POST, DELETE;
 
     @NotNull
