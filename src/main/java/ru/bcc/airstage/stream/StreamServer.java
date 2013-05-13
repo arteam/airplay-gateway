@@ -2,6 +2,7 @@ package ru.bcc.airstage.stream;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import org.apache.log4j.Logger;
 import ru.bcc.airstage.stream.server.HttpServer;
 
@@ -16,7 +17,10 @@ import ru.bcc.airstage.stream.server.HttpServer;
 public class StreamServer {
 
     private String host = NetworkUtils.ipAddress();
-    private int port = 8080;
+
+    @Inject
+    @Named("streamPort")
+    private int port;
 
     @Inject
     private HttpServer httpServer;
