@@ -21,6 +21,7 @@ import ru.bcc.airstage.server.ContentPlayer;
 import ru.bcc.airstage.server.TCPServer;
 import ru.bcc.airstage.stream.StreamServer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -70,7 +71,8 @@ public class Main {
         log.info("Found content: " + contentDao.getContentList());
     }
 
-    public List<Device> searchDevices() {
+    public void searchDevices() {
+        log.info("Device discovering...");
         jmdnsGateway.start();
         housekeeping.afterShutdown(new Runnable() {
             @Override
@@ -78,15 +80,6 @@ public class Main {
                 jmdnsGateway.close();
             }
         });
-        log.info("Device discovering...");
-        jmdnsGateway.waitForDevices();
-        List<Device> devices = deviceDao.getDevices();
-        if (!devices.isEmpty()) {
-            log.info("Found devices: " + devices);
-        } else {
-            log.warn("No available devices");
-        }
-        return devices;
     }
 
     public void startTcpServer() {
@@ -119,9 +112,15 @@ public class Main {
         });
     }
 
-    public void streamContent(List<Device> devices) {
-        if (devices.isEmpty()) {
-            return;
+    public void streamContent() {
+        List<Device> devices;
+        while (true) {
+            devices = deviceDao.getDevices();
+            if (!devices.isEmpty()) break;
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
         }
 
         Device device = devices.get(0);
@@ -169,8 +168,7 @@ public class Main {
         main.parseLibraryXml();
         main.stopPlayerAfterShutdown();
 
-        List<Device> devices = main.searchDevices();
-        main.streamContent(devices);
-
+        main.searchDevices();
+        //main.streamContent();
     }
 }
