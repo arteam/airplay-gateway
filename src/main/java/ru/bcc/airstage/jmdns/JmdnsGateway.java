@@ -1,5 +1,6 @@
 package ru.bcc.airstage.jmdns;
 
+import com.google.inject.name.Named;
 import ru.bcc.airstage.database.DeviceDao;
 import ru.bcc.airstage.model.Device;
 import org.apache.log4j.Logger;
@@ -12,11 +13,6 @@ import javax.jmdns.ServiceEvent;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Date: 29.04.13
@@ -28,7 +24,8 @@ import java.util.concurrent.TimeUnit;
 @Singleton
 public class JmdnsGateway {
 
-    private static final String SERVICE_TYPE = "_airplay._tcp.local.";
+    private static final String AIRPLAY_SERVICE = "_airplay._tcp.local.";
+    private static final String AIRSTAGE_SERVICE = "_airstage._tcp.local.";
     private static final Logger log = Logger.getLogger(JmdnsGateway.class);
 
     @NotNull
@@ -36,6 +33,10 @@ public class JmdnsGateway {
 
     @Inject
     private DeviceDao deviceDao;
+
+    @Inject
+    @Named("clientPort")
+    private int port;
 
     /**
      * Listener of event from devices
@@ -53,7 +54,7 @@ public class JmdnsGateway {
         public void serviceRemoved(ServiceEvent event) {
             // Device has been removed. We should update device list
             log.info(event + " removed");
-            ServiceInfo serviceInfo = jmDNS.getServiceInfo(SERVICE_TYPE, event.getName());
+            ServiceInfo serviceInfo = jmDNS.getServiceInfo(AIRPLAY_SERVICE, event.getName());
             Device device = new Device(serviceInfo.getName(), serviceInfo.getInetAddress(), serviceInfo.getPort());
             deviceDao.remove(device);
             log.info("Removed " + device);
@@ -63,7 +64,7 @@ public class JmdnsGateway {
         public void serviceResolved(ServiceEvent event) {
             // Device resolved. We should add it to device list
             log.info(event + " resolved");
-            ServiceInfo serviceInfo = jmDNS.getServiceInfo(SERVICE_TYPE, event.getName());
+            ServiceInfo serviceInfo = jmDNS.getServiceInfo(AIRPLAY_SERVICE, event.getName());
 
             Device device = new Device(serviceInfo.getName(), serviceInfo.getInetAddress(), serviceInfo.getPort());
             deviceDao.add(device);
@@ -77,7 +78,8 @@ public class JmdnsGateway {
     public void start() {
         try {
             jmDNS = JmDNS.create();
-            jmDNS.addServiceListener(SERVICE_TYPE, serviceListener);
+            jmDNS.addServiceListener(AIRPLAY_SERVICE, serviceListener);
+            registerAirStageService();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -89,7 +91,8 @@ public class JmdnsGateway {
     public void close() {
         try {
             log.info("Closing JmDNS gateway...");
-            jmDNS.removeServiceListener(SERVICE_TYPE, serviceListener);
+            jmDNS.removeServiceListener(AIRPLAY_SERVICE, serviceListener);
+            jmDNS.unregisterAllServices();
             jmDNS.close();
             log.info("JmDNS gateway is closed");
         } catch (IOException e) {
@@ -98,6 +101,17 @@ public class JmdnsGateway {
     }
 
 
+    /**
+     * Register tcp server through MDNS for discovery for clients
+     */
+    private void registerAirStageService() {
+        ServiceInfo airStageService = ServiceInfo.create(AIRSTAGE_SERVICE, "airStage server", port, "airStage server");
+        try {
+            jmDNS.registerService(airStageService);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
+    }
 
 }
