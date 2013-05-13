@@ -49,5 +49,6 @@ public class ConnectionPool {
                 System.err.println("Unable close " + socket);
             }
         }
+        connections.clear();
     }
 }
