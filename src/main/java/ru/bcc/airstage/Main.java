@@ -66,7 +66,7 @@ public class Main {
     private Housekeeping housekeeping;
 
     public void parseLibraryXml() {
-        ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get("./library.xml");
+        ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get();
         //ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get();
         for (ITunesTrack track : iTunesLibrary.getTracks().values()) {
             contentDao.addContent(new Content(track));
