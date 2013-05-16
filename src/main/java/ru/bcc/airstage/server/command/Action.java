@@ -15,7 +15,8 @@ import java.util.Map;
 public enum Action {
     DEVICES("getDevices"),
     CONTENT("getContent"),
-    PLAY("play");
+    PLAY("play"),
+    UNDEFINED("undefined");
 
     private static final Map<String, Action> commands = new HashMap<String, Action>();
 

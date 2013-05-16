@@ -75,7 +75,6 @@ public class Main {
     }
 
     public void searchDevices() {
-        log.info("Device discovering...");
         jmdnsGateway.start();
         housekeeping.afterShutdown(new Runnable() {
             @Override
@@ -182,6 +181,7 @@ public class Main {
 
         main.stopPlayerAfterShutdown();
         main.closeAirPlayConnectionsAfterShutdown();
+        log.info("AirStage started");
         //main.streamContent();
     }
 }

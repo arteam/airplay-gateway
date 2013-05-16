@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.bcc.airstage.server.command.Action;
 import ru.bcc.airstage.server.command.Request;
 import ru.bcc.airstage.server.command.Response;
 
@@ -27,7 +28,6 @@ public class ConnectionHandler {
 
     @Inject
     private Dispatcher dispatcher;
-
 
 
     /**
@@ -83,7 +83,7 @@ public class ConnectionHandler {
             request = jsonConverter.fromJson(jsonRequest);
         } catch (Exception e) {
             log.error("Unable parse " + jsonRequest, e);
-            return jsonConverter.toJson(new Response(1, "Invalid request"));
+            return jsonConverter.toJson(new Response(1, "Invalid request", Action.UNDEFINED));
         }
 
         try {
@@ -93,7 +93,7 @@ public class ConnectionHandler {
             return jsonResponse;
         } catch (Exception e) {
             log.error("Internal error", e);
-            return jsonConverter.toJson(new Response(2, "Internal error"));
+            return jsonConverter.toJson(new Response(2, "Internal error", request.getAction()));
         }
     }
 }

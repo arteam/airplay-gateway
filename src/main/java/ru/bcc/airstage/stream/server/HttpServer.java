@@ -78,17 +78,16 @@ public class HttpServer {
      * Stops the server.
      */
     public void stop() {
+        log.info("Stopping stream server...");
         try {
             myServerSocket.close();
             log.info(myServerSocket + " closed");
         } catch (IOException ioe) {
             log.error("I/O error", ioe);
         }
-        workExecutor.shutdown();
-        mainExecutor.shutdown();
-        log.info("Socket closed: " + myServerSocket.isClosed());
-        log.info("Work thread pool terminated: " + workExecutor.isTerminated());
-        log.info("Dispatcher thread pool terminated: " + mainExecutor.isTerminated());
+        workExecutor.shutdownNow();
+        mainExecutor.shutdownNow();
+        log.info("Executors are terminated");
     }
 
 }
