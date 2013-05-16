@@ -48,7 +48,7 @@ public class ConnectionHandlerTest {
         Assert.assertEquals(jsonResponse,
                 "{\"code\":0,\"value\":[{\"id\":\"FD902B2431E2ABB97886A8A6DC5F0B25\",\"name\":\"Boss AppleTV\"," +
                         "\"address\":\"192.168.52.15\"},{\"id\":\"EA2323349005247903487r3847231231\"," +
-                        "\"name\":\"Home AppleTV\",\"address\":\"192.168.52.11\"}]}");
+                        "\"name\":\"Home AppleTV\",\"address\":\"192.168.52.11\"}],\"type\":\"DEVICES\"}");
     }
 
     @Test
@@ -61,7 +61,7 @@ public class ConnectionHandlerTest {
         Assert.assertEquals(jsonResponse, "{\"code\":0,\"value\":[{\"id\":\"442342\",\"artist\":\"Set Jones\"," +
                 "\"name\":\"Walk from Colorado\",\"isHd\":false,\"format\":\"MPEG-4\",\"source\":\"iTunes\"}," +
                 "{\"id\":\"5456\",\"artist\":\"Paul Hegarty\",\"name\":\"Blocks and Multithreading\",\"isHd\":true," +
-                "\"format\":\"MPEG-4\",\"source\":\"iTunes\"}]}");
+                "\"format\":\"MPEG-4\",\"source\":\"iTunes\"}],\"type\":\"CONTENT\"}");
     }
 
     @Test
@@ -73,14 +73,14 @@ public class ConnectionHandlerTest {
         String jsonResponse = connectionHandler.process("{\"action\":\"play\"," +
                 "\"params\":{\"contentId\":\"81\",\"deviceId\":\"FD902B2431E2ABB97886A8A6DC5F0B25\"}}");
         System.out.println(jsonResponse);
-        Assert.assertEquals(jsonResponse, "{\"code\":0,\"value\":\"200 OK\"}");
+        Assert.assertEquals(jsonResponse, "{\"code\":0,\"value\":\"200 OK\",\"type\":\"PLAY\"}");
     }
 
     @Test
     public void testBadRequest() throws Exception {
         String jsonResponse = connectionHandler.process("not json");
         System.out.println(jsonResponse);
-        Assert.assertEquals(jsonResponse, "{\"code\":1,\"value\":\"Invalid request\"}");
+        Assert.assertEquals(jsonResponse, "{\"code\":1,\"value\":\"Invalid request\",\"type\":\"UNDEFINED\"}");
     }
 
     @Test
@@ -93,6 +93,6 @@ public class ConnectionHandlerTest {
         String jsonResponse = connectionHandler.process("{\"action\":\"play\"," +
                 "\"params\":{\"contentId\":\"82\",\"deviceId\":\"77\"}}");
         System.out.println(jsonResponse);
-        Assert.assertEquals(jsonResponse, "{\"code\":2,\"value\":\"Internal error\"}");
+        Assert.assertEquals(jsonResponse, "{\"code\":2,\"value\":\"Internal error\",\"type\":\"PLAY\"}");
     }
 }
