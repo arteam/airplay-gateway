@@ -42,7 +42,7 @@ public class ConnectionHandlerTest {
     public void testGetDevices() throws Exception {
         Device device1 = new Device("FD902B2431E2ABB97886A8A6DC5F0B25", "Boss AppleTV", Inet4Address.getByName("192.168.52.15"), 7000);
         Device device2 = new Device("EA2323349005247903487r3847231231", "Home AppleTV", Inet4Address.getByName("192.168.52.11"), 7000);
-        dispatcherMock.returns(new Response(0, Arrays.asList(device1, device2))).process(new Request(Action.DEVICES, Collections.EMPTY_MAP));
+        dispatcherMock.returns(new Response(0, Arrays.asList(device1, device2), Action.DEVICES)).process(new Request(Action.DEVICES, Collections.EMPTY_MAP));
         String jsonResponse = connectionHandler.process("{\"action\":\"getDevices\"}");
         System.out.println(jsonResponse);
         Assert.assertEquals(jsonResponse,
@@ -55,7 +55,7 @@ public class ConnectionHandlerTest {
     public void testGetContent() throws Exception {
         Content content1 = new Content("442342", "Walk from Colorado", "Set Jones", ContentFormat.MPEG_4, "url", false, ContentSource.ITUNES);
         Content content2 = new Content("5456", "Blocks and Multithreading", "Paul Hegarty", ContentFormat.MPEG_4, "url", true, ContentSource.ITUNES);
-        dispatcherMock.returns(new Response(0, Arrays.asList(content1, content2))).process(new Request(Action.CONTENT, Collections.EMPTY_MAP));
+        dispatcherMock.returns(new Response(0, Arrays.asList(content1, content2), Action.CONTENT)).process(new Request(Action.CONTENT, Collections.EMPTY_MAP));
         String jsonResponse = connectionHandler.process("{\"action\":\"getContent\"}");
         System.out.println(jsonResponse);
         Assert.assertEquals(jsonResponse, "{\"code\":0,\"value\":[{\"id\":\"442342\",\"artist\":\"Set Jones\"," +
@@ -66,7 +66,7 @@ public class ConnectionHandlerTest {
 
     @Test
     public void testPlayContent() throws Exception {
-        dispatcherMock.returns(new Response(0, "200 OK")).process(new Request(Action.PLAY, new HashMap<String, String>() {{
+        dispatcherMock.returns(new Response(0, "200 OK", Action.PLAY)).process(new Request(Action.PLAY, new HashMap<String, String>() {{
             put("contentId", "81");
             put("deviceId", "FD902B2431E2ABB97886A8A6DC5F0B25");
         }}));

@@ -15,16 +15,19 @@ public class Response {
     @NotNull
     private Object value;
 
+    private Action type;
+
     public Response() {
     }
 
-    public Response(int code, @NotNull Object value) {
+    public Response(int code, @NotNull Object value, Action type) {
         this.code = code;
         this.value = value;
+        this.type = type;
     }
 
-    public static Response ok(@NotNull Object value) {
-        return new Response(0, value);
+    public Action getType() {
+        return type;
     }
 
     public int getCode() {

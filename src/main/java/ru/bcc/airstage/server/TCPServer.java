@@ -77,16 +77,14 @@ public class TCPServer {
         log.info("Stopping TCP server...");
         try {
             serverSocket.close();
+            log.info(serverSocket + " closed");
         } catch (IOException e) {
             log.error("Unable close socket", e);
         }
 
         connectionExecutor.shutdownNow();
         mainExecutor.shutdownNow();
-
-        log.info("Socket closed: " + serverSocket.isClosed());
-        //log.info("Connection thread pool terminated: " + connectionExecutor.isTerminated());
-        //log.info("Dispatcher thread terminated: " + mainExecutor.isTerminated());
+        log.info("Executors are terminated");
     }
 
 

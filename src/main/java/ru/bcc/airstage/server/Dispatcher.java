@@ -48,18 +48,18 @@ public class Dispatcher {
         Action action = request.getAction();
         switch (action) {
             case DEVICES:
-                return new Response(0, deviceDao.getDevices());
+                return new Response(0, deviceDao.getDevices(), Action.DEVICES);
             case CONTENT:
-                return new Response(0, contentDao.getContentList());
+                return new Response(0, contentDao.getContentList(), Action.CONTENT);
             case PLAY:
                 String contentId = request.getParams().get("contentId");
                 String deviceId = request.getParams().get("deviceId");
                 if (contentId == null || deviceId == null) {
                     throw new IllegalArgumentException("Content id and device id should be specified");
                 }
-                return new Response(0, contentPlayer.playContent(contentId, deviceId));
+                return new Response(0, contentPlayer.playContent(contentId, deviceId), Action.PLAY);
             default:
-                return new Response(1, "Invalid action");
+                return new Response(1, "Invalid action", Action.UNDEFINED);
         }
     }
 

@@ -1,9 +1,11 @@
 package ru.bcc.airstage.airplay;
 
+import org.apache.log4j.Logger;
 import ru.bcc.airstage.model.Device;
 import org.jetbrains.annotations.NotNull;
 
 import com.google.inject.Singleton;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Map;
@@ -18,6 +20,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Singleton
 public class ConnectionPool {
+
+    private static final Logger log = Logger.getLogger(ConnectionPool.class);
 
     @NotNull
     private final Map<Device, Socket> connections = new ConcurrentHashMap<Device, Socket>();
@@ -50,5 +54,6 @@ public class ConnectionPool {
             }
         }
         connections.clear();
+        log.info("AirPlay connections are closed");
     }
 }
