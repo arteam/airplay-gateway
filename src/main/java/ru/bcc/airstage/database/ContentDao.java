@@ -1,16 +1,14 @@
 package ru.bcc.airstage.database;
 
 import com.google.inject.Singleton;
-import ru.bcc.airstage.model.Content;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.bcc.airstage.model.Content;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Date: 30.04.13
@@ -39,5 +37,14 @@ public class ContentDao {
         return contentMap.values();
     }
 
-
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder("Found content: \n");
+        Iterator<Content> iterator = contentMap.values().iterator();
+        while (iterator.hasNext()) {
+            builder.append(iterator.next());
+            if (iterator.hasNext()) builder.append("\n");
+        }
+        return builder.toString();
+    }
 }

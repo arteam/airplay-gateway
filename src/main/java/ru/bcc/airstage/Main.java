@@ -24,6 +24,7 @@ import ru.bcc.airstage.server.TCPServer;
 import ru.bcc.airstage.stream.StreamServer;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -72,14 +73,14 @@ public class Main {
     private Housekeeping housekeeping;
 
     public void parseLibraryXml() {
-        ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get();
+        ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get("./library3.xml");
         Map<String, Content> contentMap = new HashMap<String, Content>();
         for (ITunesTrack track : iTunesLibrary.getTracks().values()) {
             Content content = new Content(track);
             contentMap.put(content.getId(), content);
         }
-        contentDao.setContent(contentMap);
-        log.info("Found content: " + contentDao.getContentList());
+        log.info(contentDao.toString());
+
     }
 
     public void searchDevices() {

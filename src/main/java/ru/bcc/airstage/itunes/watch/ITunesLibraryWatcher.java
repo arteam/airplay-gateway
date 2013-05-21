@@ -52,8 +52,8 @@ public class ITunesLibraryWatcher {
         file = new File(path);
         lastModified = new Date(file.lastModified());
 
-        log.info("Starting monitoring ITunes library  " + file + " for changes");
-        executor.schedule(new Runnable() {
+        log.info("Starting monitoring ITunes library in " + file.getAbsolutePath() + " for changes");
+        executor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 if (!file.exists()) {
@@ -61,12 +61,12 @@ public class ITunesLibraryWatcher {
                 }
                 Date newModifiedTime = new Date(file.lastModified());
                 if (newModifiedTime.after(lastModified)) {
-                    log.info("ITunes library has changed. New last modified time:" + newModifiedTime);
+                    log.info("ITunes library has changed. New last modified time: " + newModifiedTime);
                     updateContent();
                     lastModified = newModifiedTime;
                 }
             }
-        }, 30, TimeUnit.SECONDS);
+        }, 30, 30, TimeUnit.SECONDS);
     }
 
     /**
@@ -81,7 +81,7 @@ public class ITunesLibraryWatcher {
             contentMap.put(content.getId(), content);
         }
         contentDao.setContent(contentMap);
-        log.info("Found content: " + contentDao.getContentList());
+        log.info(contentDao);
     }
 
     public void stop() {

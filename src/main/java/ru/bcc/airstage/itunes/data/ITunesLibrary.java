@@ -1,6 +1,7 @@
 package ru.bcc.airstage.itunes.data;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -101,16 +102,20 @@ public class ITunesLibrary {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("ItunesLibrary{");
-        sb.append("majorVersion=").append(majorVersion).append("\n");
-        sb.append("minorVersion=").append(minorVersion).append("\n");
-        sb.append("date=").append(date).append("\n");
-        sb.append("applicationVersion=").append(applicationVersion).append("\n");
-        sb.append("features=").append(features).append("\n");
-        sb.append("showContentRatings=").append(showContentRatings).append("\n");
-        sb.append("musicFolder=").append(musicFolder).append("\n");
-        sb.append("libraryPersistentID=").append(libraryPersistentID).append("\n");
-        sb.append("tracks=").append(tracks).append("\n");
-        sb.append('}');
+        sb.append("majorVersion=").append(majorVersion);
+        sb.append(", minorVersion=").append(minorVersion);
+        sb.append(", date=").append(date);
+        sb.append(", applicationVersion=").append(applicationVersion);
+        sb.append(", features=").append(features);
+        sb.append(", showContentRatings=").append(showContentRatings);
+        sb.append(", musicFolder=").append(musicFolder);
+        sb.append(", libraryPersistentID=").append(libraryPersistentID);
+
+        sb.append("\ntracks={").append("\n");
+        for (ITunesTrack iTunesTrack : tracks.values()) {
+            sb.append(" ").append(iTunesTrack).append("\n");
+        }
+        sb.append("}");
         return sb.toString();
     }
 }
