@@ -27,21 +27,17 @@
 
 package ru.bcc.airstage.itunes.parser;
 
-import org.jetbrains.annotations.Nullable;
-import org.mozilla.universalchardet.UniversalDetector;
-import ru.bcc.airstage.itunes.handler.constants.TagType;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import ru.bcc.airstage.itunes.handler.constants.TagType;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
 
 /**
  * Represents XML tag
  */
 public class Tag {
+    private static final Logger log = Logger.getLogger(Tag.class);
 
     @NotNull
     private TagType name;
@@ -80,16 +76,11 @@ public class Tag {
     private String decode(char[] buffer, int start, int length) {
         String utf8 = new String(buffer, start, length);
         for (char b : utf8.toCharArray()) {
-            if ((int) b > 0xC0) {
-                try {
-                    byte[] buf = utf8.getBytes("windows-1252");
-                    return new String(buf, "windows-1251").replace("?", "");
-                } catch (UnsupportedEncodingException e) {
-                    throw new IllegalStateException(e);
-                }
+            if (b > 0xC0 && b < 0x17C) {
+                log.warn("Can't parse " + utf8);
+                return "Undefined";
             }
         }
-
         return utf8;
     }
 }
