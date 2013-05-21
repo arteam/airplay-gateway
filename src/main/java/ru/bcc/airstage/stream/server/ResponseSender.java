@@ -63,9 +63,9 @@ class ResponseSender {
             int step = 0;
             byte[] buff = new byte[BUFFER_SIZE];
             while (pending > 0) {
-                int read = data.read(buff, 0, ((pending > BUFFER_SIZE) ? BUFFER_SIZE : pending));
+                int read = data.read(buff, 0, Math.min(pending, BUFFER_SIZE));
                 // All data is read
-                if (read <= 0) {
+                if (read == -1) {
                     break;
                 }
                 outputStream.write(buff, 0, read);
@@ -73,7 +73,7 @@ class ResponseSender {
                 step++;
             }
 
-            log.info("Read " + amount + "in " + step + " steps");
+            log.info("Read " + amount + " in " + step + " steps");
             outputStream.flush();
 
             data.close();
