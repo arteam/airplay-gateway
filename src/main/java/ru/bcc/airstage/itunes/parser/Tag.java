@@ -27,8 +27,16 @@
 
 package ru.bcc.airstage.itunes.parser;
 
+import org.jetbrains.annotations.Nullable;
+import org.mozilla.universalchardet.UniversalDetector;
 import ru.bcc.airstage.itunes.handler.constants.TagType;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
 
 /**
  * Represents XML tag
@@ -40,6 +48,7 @@ public class Tag {
 
     @NotNull
     private String innerText;
+    private CharBuffer byteBuffer;
 
     public Tag(@NotNull TagType name) {
         this.name = name;
@@ -60,10 +69,27 @@ public class Tag {
     }
 
     public void addInnerText(char[] buffer, int start, int length) {
-        innerText = new String(buffer, start, length);
+        innerText = decode(buffer, start, length);
     }
 
     public String toString() {
         return "Tag {name: " + name + ", innerText: " + innerText + "}";
+    }
+
+    @NotNull
+    private String decode(char[] buffer, int start, int length) {
+        String utf8 = new String(buffer, start, length);
+        for (char b : utf8.toCharArray()) {
+            if ((int) b > 0xC0) {
+                try {
+                    byte[] buf = utf8.getBytes("windows-1252");
+                    return new String(buf, "windows-1251").replace("?", "");
+                } catch (UnsupportedEncodingException e) {
+                    throw new IllegalStateException(e);
+                }
+            }
+        }
+
+        return utf8;
     }
 }
