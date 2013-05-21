@@ -15,6 +15,7 @@ import ru.bcc.airstage.database.DeviceDao;
 import ru.bcc.airstage.itunes.ITunesLibraryProvider;
 import ru.bcc.airstage.itunes.data.ITunesLibrary;
 import ru.bcc.airstage.itunes.data.ITunesTrack;
+import ru.bcc.airstage.itunes.watch.ITunesLibraryWatcher;
 import ru.bcc.airstage.jmdns.JmdnsGateway;
 import ru.bcc.airstage.model.Content;
 import ru.bcc.airstage.model.Device;
@@ -22,7 +23,9 @@ import ru.bcc.airstage.server.ContentPlayer;
 import ru.bcc.airstage.server.TCPServer;
 import ru.bcc.airstage.stream.StreamServer;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Date: 26.04.13
@@ -63,14 +66,19 @@ public class Main {
     private ConnectionPool connectionPool;
 
     @Inject
+    private ITunesLibraryWatcher iTunesLibraryWatcher;
+
+    @Inject
     private Housekeeping housekeeping;
 
     public void parseLibraryXml() {
         ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get();
-        //ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get();
+        Map<String, Content> contentMap = new HashMap<String, Content>();
         for (ITunesTrack track : iTunesLibrary.getTracks().values()) {
-            contentDao.addContent(new Content(track));
+            Content content = new Content(track);
+            contentMap.put(content.getId(), content);
         }
+        contentDao.setContent(contentMap);
         log.info("Found content: " + contentDao.getContentList());
     }
 
@@ -119,6 +127,16 @@ public class Main {
             @Override
             public void run() {
                 connectionPool.closeAll();
+            }
+        });
+    }
+
+    private void startMonitoringITunesLibrary() {
+        iTunesLibraryWatcher.start();
+        housekeeping.afterShutdown(new Runnable() {
+            @Override
+            public void run() {
+                iTunesLibraryWatcher.stop();
             }
         });
     }
@@ -176,7 +194,9 @@ public class Main {
 
         main.startTcpServer();
         main.startStreamServer();
+
         main.parseLibraryXml();
+        main.startMonitoringITunesLibrary();
         main.searchDevices();
 
         main.stopPlayerAfterShutdown();
