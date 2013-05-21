@@ -5,7 +5,11 @@ import ru.bcc.airstage.model.Content;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -19,28 +23,21 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class ContentDao {
 
     @NotNull
-    private List<Content> contentList = new CopyOnWriteArrayList<Content>();
+    private Map<String, Content> contentMap = new HashMap<String, Content>();
+
+    public void setContent(@NotNull Map<String, Content> contentMap) {
+        this.contentMap = contentMap;
+    }
 
     @Nullable
     public Content getById(@NotNull String id) {
-        for (Content content : contentList) {
-            if (content.getId().equals(id)) {
-                return content;
-            }
-        }
-        return null;
-    }
-
-    public void addContent(@NotNull Content content) {
-        contentList.add(content);
-    }
-
-    public void removeContent(@NotNull Content content) {
-        contentList.remove(content);
+        return contentMap.get(id);
     }
 
     @NotNull
-    public List<Content> getContentList() {
-        return contentList;
+    public Collection<Content> getContentList() {
+        return contentMap.values();
     }
+
+
 }

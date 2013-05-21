@@ -1,5 +1,6 @@
 package ru.bcc.airstage.itunes;
 
+import com.google.inject.Singleton;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +16,7 @@ import java.io.IOException;
  *
  * @author Artem Prigoda
  */
+@Singleton
 public class ItunesLibraryFinder {
 
     private static final Logger log = Logger.getLogger(ItunesLibraryFinder.class);
