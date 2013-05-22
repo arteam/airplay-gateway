@@ -73,7 +73,7 @@ public class Main {
     private Housekeeping housekeeping;
 
     public void parseLibraryXml() {
-        ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get("./library3.xml");
+        ITunesLibrary iTunesLibrary = iTunesLibraryProvider.get();
         Map<String, Content> contentMap = new HashMap<String, Content>();
         for (ITunesTrack track : iTunesLibrary.getTracks().values()) {
             Content content = new Content(track);
