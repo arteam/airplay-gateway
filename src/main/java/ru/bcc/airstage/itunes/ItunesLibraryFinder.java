@@ -72,6 +72,10 @@ public class ItunesLibraryFinder {
                     return libraryPath;
                 }
             }
+            case LINUX: {
+                log.info("Linux doesn't support ITunes. Try parse library.xml from classpath");
+                return "./library.xml";
+            }
             default:
                 log.info("OS " + currentOs + " doesn't support ITunes");
         }
