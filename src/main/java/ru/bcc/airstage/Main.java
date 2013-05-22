@@ -79,6 +79,7 @@ public class Main {
             Content content = new Content(track);
             contentMap.put(content.getId(), content);
         }
+        contentDao.setContent(contentMap);
         log.info(contentDao.toString());
 
     }
