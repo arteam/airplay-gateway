@@ -5,24 +5,17 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.name.Names;
 import junit.framework.Assert;
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.unitils.mock.Mock;
-import ru.bcc.airstage.database.ContentDao;
-import ru.bcc.airstage.stream.StreamServer;
-
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.Charset;
+import com.github.arteam.database.ContentDao;
+import com.github.arteam.stream.StreamServer;
 
 /**
  * Date: 21.05.13

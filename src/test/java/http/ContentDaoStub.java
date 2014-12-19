@@ -2,10 +2,10 @@ package http;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ru.bcc.airstage.database.ContentDao;
-import ru.bcc.airstage.model.Content;
-import ru.bcc.airstage.model.ContentFormat;
-import ru.bcc.airstage.model.ContentSource;
+import com.github.arteam.database.ContentDao;
+import com.github.arteam.model.Content;
+import com.github.arteam.model.ContentFormat;
+import com.github.arteam.model.ContentSource;
 
 /**
  * Date: 21.05.13
