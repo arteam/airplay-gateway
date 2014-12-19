@@ -41,7 +41,7 @@
                     <transformers>
                         <transformer
                                 implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                            <mainClass>ru.bcc.airstage.Main</mainClass>
+                            <mainClass>com.github.arteam.Main</mainClass>
                         </transformer>
                     </transformers>
                 </configuration>
@@ -89,7 +89,7 @@
         </dependency>
 
         <!--  <dependency>
-              <groupId>ru.bcc.airstage.stream.server</groupId>
+              <groupId>com.github.arteam.stream.server</groupId>
               <artifactId>nanohttpd</artifactId>
               <version>1.0.0</version>
           </dependency>-->
